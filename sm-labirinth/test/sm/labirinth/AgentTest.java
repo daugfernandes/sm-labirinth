@@ -38,6 +38,12 @@ public class AgentTest {
     public void tearDown() {
     }
 
+    @Test
+    public void testConstructor() {
+        Agent instance = new Agent(null, null);
+        assertNotNull(instance);
+    }
+
     /**
      * Test of ExitFound method, of class Agent.
      */
