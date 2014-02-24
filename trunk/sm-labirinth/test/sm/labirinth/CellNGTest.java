@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package sm.labirinth;
 
 import static org.testng.Assert.*;
@@ -18,7 +17,7 @@ import org.testng.annotations.Test;
  * @author david
  */
 public class CellNGTest {
-    
+
     public CellNGTest() {
     }
 
@@ -38,18 +37,22 @@ public class CellNGTest {
     public void tearDownMethod() throws Exception {
     }
 
-    /**
-     * Test of inUse method, of class Cell.
-     */
     @Test
-    public void testInUse() {
-        System.out.println("inUse");
+    public void testNotInUse() {
+        System.out.println("NotInUse");
         Cell instance = new Cell();
         boolean expResult = false;
         boolean result = instance.inUse();
         assertEquals(result, expResult);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    }
+
+    @Test
+    public void testInUse() {
+        System.out.println("InUse");
+        Cell instance = new Cell(10, 10);
+        boolean expResult = true;
+        boolean result = instance.inUse();
+        assertEquals(result, expResult);
     }
 
     /**
@@ -94,5 +97,5 @@ public class CellNGTest {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
-    
+
 }
