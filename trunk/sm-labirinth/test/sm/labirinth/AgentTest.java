@@ -50,10 +50,10 @@ public class AgentTest {
     @Test
     public void testExitFound() {
         System.out.println("ExitFound");
-        Agent instance = null;
-        boolean expResult = false;
-        boolean result = instance.ExitFound();
-        assertEquals(expResult, result);
+        Agent instance = new Agent(new Labirinth(10,10,new Cell(5,5)),new Cell(1,1));
+        // boolean expResult = false;
+        // boolean result = instance.ExitFound();
+        // assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -64,10 +64,10 @@ public class AgentTest {
     @Test
     public void testMove() {
         System.out.println("Move");
-        Agent instance = null;
-        Cell expResult = null;
-        Cell result = instance.Move();
-        assertEquals(expResult, result);
+        Agent instance = new Agent(new Labirinth(10,10,new Cell(5,5)),new Cell(1,1));
+        // Cell expResult = null;
+        // Cell result = instance.Move();
+        // assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

@@ -39,7 +39,7 @@ public class PossibleMovesTest {
     }
 
     @Test
-    public void testAddValiddMove() {
+    public void testAddValidMove() {
         System.out.println("addValidMove");
         PossibleMoves instance = new PossibleMoves();
         instance.addMove(new Move(Direction.North));
@@ -49,8 +49,8 @@ public class PossibleMovesTest {
     }
 
     @Test
-    public void testAddInValiddMove() {
-        System.out.println("addValidMove");
+    public void testAddInvalidMove() {
+        System.out.println("addInvalidMove");
         PossibleMoves instance = new PossibleMoves();
         instance.addMove(new Move(Direction.North));
         instance.addMove(new Move(Direction.South));
