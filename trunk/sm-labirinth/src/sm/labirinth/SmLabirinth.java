@@ -17,6 +17,10 @@ public class SmLabirinth {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        
+        Move m = new Move(Direction.East);
+        m.setWasTried(true);
+        
     }
     
 }

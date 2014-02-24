@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Agent.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;sm-labirinth&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">sm.labirinth</a> &gt; <span class="el_source">Agent.java</span></div><h1>Agent.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package sm.labirinth;
+
+import java.util.Stack;
+
+/**
+ *
+ * @author david
+ */
+public class Agent extends jade.core.Agent {
+
+    String name;
+    Labirinth _labirinth;
+    Stack _path;
+    Cell _home;
+
+    @Override
+    protected void setup() {
+// Printout a welcome message
+<span class="nc" id="L24">        System.out.println(&quot;Hello! Buyer-agent &quot; + getAID().getName() + &quot; is ready.&quot;);</span>
+<span class="nc" id="L25">    }</span>
+
+<span class="nc" id="L27">    public Agent(Labirinth labirinth, Cell home) {</span>
+<span class="nc" id="L28">        this._labirinth = labirinth;</span>
+<span class="nc" id="L29">        this._home = home;</span>
+<span class="nc" id="L30">        _path = new Stack();</span>
+<span class="nc" id="L31">        _path.push(home);</span>
+<span class="nc" id="L32">    }</span>
+
+    public boolean ExitFound() {
+<span class="nc" id="L35">        return _path.peek().equals(_labirinth._exit);</span>
+    }
+
+    public Cell Move() {
+        // try to move;
+<span class="nc" id="L40">        return null;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.4.201312101107</span></div></body></html>
