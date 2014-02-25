@@ -7,7 +7,8 @@
 package sm.labirinth;
 
 import java.util.Stack;
-import jade.core.behaviours.*;
+import jade.core.behaviours.SimpleBehaviour;
+import jade.core.behaviours.ParallelBehaviour;
 
 /**
  *
@@ -21,12 +22,17 @@ public class Agent extends jade.core.Agent {
     @Override
     protected void setup() {
         // Printout a welcome message
-        System.out.println("Hello! Buyer-agent " + getAID().getName() + " is ready.");
+        System.out.println("Hello! Agent " + getAID().getName() + " is ready.");
         
-        // searchFoExit function is defined as a behaviour
+        // Create new parallel behaviour for concurrency
+        ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ANY);
         
-        // add the searchForExit behaviour to the agent
-        addBehaviour(new SearchExit());
+        // Adds the SearchExit and Negotiate behaviours to the PB
+        pb.addSubBehaviour(new SearchExit());
+        pb.addSubBehaviour(new Negotiate());
+        
+        // Adds the PB to the agent
+        this.addBehaviour(pb);
     }
 
     public Agent(Labirinth labirinth, Cell home) {
@@ -65,14 +71,13 @@ public class Agent extends jade.core.Agent {
                     // Set the move as tried
                     currentPosition.getNextPossibleMove().setWasTried(true);
                     
-                    // Store the cell for backtracking
-                    backTrack.push(currentPosition);
+                    /* Store the cell for backtracking only if
+                        there is more than one possible move */
+                    if (currentPosition.getNextPossibleMove() != null)
+                        backTrack.push(currentPosition);
                     
                     // Make a move
-                    if (nextMove._direction == Direction.North) currentPosition._y++;
-                    else if (nextMove._direction == Direction.South) currentPosition._y--;
-                    else if (nextMove._direction == Direction.West) currentPosition._x--;
-                    else if (nextMove._direction == Direction.East) currentPosition._x++;
+                    currentPosition.makeNextMove();
                 }
                 // Do some backtracking
                 else {
@@ -80,14 +85,10 @@ public class Agent extends jade.core.Agent {
                     while (backTrack.peek().getNextPossibleMove()._wasTried) {
                         
                         // Pop the cell from backtracking
-                        Cell nextCell = backTrack.pop();
-                        Move backMove = nextCell.getNextPossibleMove();
+                        Cell backCell = backTrack.pop();
                         
-                        // Make the backtrack move (repeated code... fix this by creating a "move" method)
-                        if (backMove._direction == Direction.North) currentPosition._y++;
-                        else if (backMove._direction == Direction.South) currentPosition._y--;
-                        else if (backMove._direction == Direction.West) currentPosition._x--;
-                        else if (backMove._direction == Direction.East) currentPosition._x++;
+                        // Make the backtrack move
+                        currentPosition.moveTo(backCell);
                     }
                 }
             }
@@ -95,10 +96,30 @@ public class Agent extends jade.core.Agent {
 
         @Override
         public boolean done() {
-            //To change body of generated methods, choose Tools | Templates.
-            throw new UnsupportedOperationException("Not supported yet.");
+            return ExitFound();
         }
-        // ...
+    }
+    
+    // Negotiates with other agents / with the referee
+    private class Negotiate extends SimpleBehaviour {
+
+        @Override
+        public void action() {
+            /*
+            if (!proposals.size()) return
+            else {
+                while (!proposals.size()) {
+                    // try to negotiate
+                }
+            }
+            */
+        }
+
+        @Override
+        public boolean done() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
     }
 
 }

@@ -98,4 +98,28 @@ public class CellNGTest {
         fail("The test case is a prototype.");
     }
 
+    /**
+     * Test of makeMove method, of class Cell.
+     */
+    @Test
+    public void testMakeNextMove() {
+        System.out.println("makeNextMove");
+        Cell instance = new Cell();
+        instance.makeNextMove();
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of moveTo method, of class Cell.
+     */
+    @Test
+    public void testMoveTo() {
+        System.out.println("moveTo");
+        Cell other = null;
+        Cell instance = new Cell();
+        instance.moveTo(other);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
 }

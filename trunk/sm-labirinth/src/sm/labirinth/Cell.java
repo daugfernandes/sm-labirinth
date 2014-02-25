@@ -43,4 +43,25 @@ public class Cell {
         return _possibleMoves;
     }
     
+    /**
+     * Makes a next (forward) move
+     */
+    public void makeNextMove() {
+        
+        Move nextMove = this.getNextPossibleMove();
+                
+        if (nextMove._direction == Direction.North) this._y++;
+        else if (nextMove._direction == Direction.South) this._y--;
+        else if (nextMove._direction == Direction.West) this._x--;
+        else if (nextMove._direction == Direction.East) this._x++;
+    }
+    
+    /**
+     * Moves to an other cell (used in backtracking)
+     * @param other 
+     */
+    public void moveTo(Cell other) {
+        this._x = other._x;
+        this._y = other._y;
+    }
 }
