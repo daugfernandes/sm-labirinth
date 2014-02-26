@@ -42,7 +42,7 @@ public class Labirinth {
         _exit = new Cell(exitX, height - 1, true);
       }
     }
-    _cells = new Cell[width][height];
+    _cells = new Cell[height][width];
 
     // build cells
     int kRow = 0;
@@ -87,7 +87,7 @@ public class Labirinth {
   }
 
   public Labirinth(int width, int height, Cell exit) {
-    _cells = new Cell[width][height];
+    _cells = new Cell[height][width];
     _exit = exit;
   }
 

@@ -12,36 +12,89 @@ package sm.labirinth;
  */
 public class Cell {
 
-    int _x;
-    int _y;
-    PossibleMoves _possibleMoves;
+  private int _x;
+  private int _y;
+  private boolean _isWall;
+  private PossibleMoves _possibleMoves;
 
-    public Cell() {
-<span class="nc" id="L20">        this(-1, -1);</span>
-<span class="nc" id="L21">    }</span>
+  public Cell() {
+<span class="nc" id="L21">    this(-1, -1, true);</span>
+<span class="nc" id="L22">  }</span>
 
-<span class="nc" id="L23">    public Cell(int x, int y) {</span>
-<span class="nc" id="L24">        this._x = x;</span>
-<span class="nc" id="L25">        this._y = y;</span>
-<span class="nc" id="L26">        this._possibleMoves = new PossibleMoves();</span>
-<span class="nc" id="L27">    }</span>
+<span class="nc" id="L24">  public Cell(int x, int y, boolean isWall) {</span>
+<span class="nc" id="L25">    this._x = x;</span>
+<span class="nc" id="L26">    this._y = y;</span>
+<span class="nc" id="L27">    this._possibleMoves = new PossibleMoves();</span>
+<span class="nc" id="L28">    this._isWall = isWall;</span>
+<span class="nc" id="L29">  }</span>
 
-    // just a way to tell the cell was properly constructed
-    public boolean inUse() {
-<span class="nc bnc" id="L31" title="All 4 branches missed.">        return (this._x &gt;= 0 &amp;&amp; this._y &gt;= 0);</span>
+  // just a way to tell the cell was properly constructed
+  public boolean inUse() {
+<span class="nc bnc" id="L33" title="All 4 branches missed.">    return (this._x &gt;= 0 &amp;&amp; this._y &gt;= 0);</span>
+  }
+
+  public boolean addPossibleMove(Move move) {
+<span class="nc" id="L37">    return _possibleMoves.addMove(move);</span>
+  }
+
+  public Move getNextPossibleMove() {
+<span class="nc" id="L41">    return _possibleMoves.getNextPossibleMove();</span>
+  }
+
+  public PossibleMoves getPossibleMoves() {
+<span class="nc" id="L45">    return _possibleMoves;</span>
+  }
+
+  public void SetIsWall() {
+<span class="nc" id="L49">    _isWall = true;</span>
+<span class="nc" id="L50">  }</span>
+
+  public void SetIsPathWay() {
+<span class="nc" id="L53">    _isWall = false;</span>
+<span class="nc" id="L54">  }</span>
+
+  public boolean IsPathWay() {
+<span class="nc bnc" id="L57" title="All 2 branches missed.">    return !_isWall;</span>
+  }
+
+  public boolean IsWall() {
+<span class="nc" id="L61">    return _isWall;</span>
+  }
+
+  public int getX() {
+<span class="nc" id="L65">    return _x;</span>
+  }
+
+  public int getY() {
+<span class="nc" id="L69">    return _y;</span>
+  }
+
+  /**
+   * Makes a next (forward) move
+   */
+  public void makeNextMove() {
+
+<span class="nc" id="L77">    Move nextMove = this.getNextPossibleMove();</span>
+<span class="nc" id="L78">    Direction dir = nextMove.getDirection();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">    if (dir == Direction.North) {</span>
+<span class="nc" id="L80">      this._y++;</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    } else if (dir == Direction.South) {</span>
+<span class="nc" id="L82">      this._y--;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">    } else if (dir == Direction.West) {</span>
+<span class="nc" id="L84">      this._x--;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">    } else if (dir == Direction.East) {</span>
+<span class="nc" id="L86">      this._x++;</span>
     }
-    
-    public boolean addPossibleMove(Move move) {
-<span class="nc" id="L35">        return _possibleMoves.addMove(move);</span>
-    }   
-    
-    public Move getNextPossibleMove() {
-<span class="nc" id="L39">        return _possibleMoves.getNextPossibleMove();</span>
-    }
+<span class="nc" id="L88">  }</span>
 
-    public PossibleMoves getPossibleMoves() {
-<span class="nc" id="L43">        return _possibleMoves;</span>
-    }
-    
+  /**
+   * Moves to an other cell (used in backtracking)
+   *
+   * @param other
+   */
+  public void moveTo(Cell other) {
+<span class="nc" id="L96">    this._x = other._x;</span>
+<span class="nc" id="L97">    this._y = other._y;</span>
+<span class="nc" id="L98">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.4.201312101107</span></div></body></html>

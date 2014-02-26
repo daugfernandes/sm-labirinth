@@ -18,7 +18,7 @@ public class PossibleMoves {
   List<Move> _moves;
 
   public PossibleMoves() {
-    _moves = new ArrayList<>();
+    _moves = new ArrayList<Move>();
   }
 
   public boolean addMove(Move move) {

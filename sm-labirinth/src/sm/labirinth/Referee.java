@@ -24,7 +24,7 @@ public class Referee extends jade.core.Agent {
 
   public Referee(String labirinthFilename) throws IOException {
     this._labirinth = new Labirinth(labirinthFilename);
-    this._agents = new ArrayList<>();
+    this._agents = new ArrayList<Agent>();
   }
 
   public List<Agent> getAgents() {

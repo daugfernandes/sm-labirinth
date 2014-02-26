@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package sm.labirinth;
 
 /**
@@ -12,34 +11,35 @@ package sm.labirinth;
  * @author joaorodr84@gmail.com
  */
 public class Move {
-    Direction _direction;
-    boolean _wasTried;
-    
-<span class="nc" id="L18">    public Move() {</span>
-<span class="nc" id="L19">        this._direction = Direction.Unknown;</span>
-<span class="nc" id="L20">        this._wasTried = false;</span>
-<span class="nc" id="L21">    }</span>
-    
-<span class="fc" id="L23">    public Move(Direction direction) {</span>
-<span class="fc" id="L24">        this._direction = direction;</span>
-<span class="fc" id="L25">        this._wasTried = false;</span>
-<span class="fc" id="L26">    }</span>
-    
-    public Direction getDirection() {
-<span class="nc" id="L29">        return _direction;</span>
-    }
-    
-    public boolean getWasTried() {
-<span class="nc" id="L33">        return _wasTried;</span>
-    }
-    
-    public void setDirection(Direction value) {
-<span class="nc" id="L37">        this._direction = value;</span>
-<span class="nc" id="L38">    }</span>
-    
-    public void setWasTried(boolean value) {
-<span class="fc" id="L41">        _wasTried = true;</span>
-<span class="fc" id="L42">    }</span>
-    
+
+  private Direction _direction;
+  private boolean _wasTried;
+
+<span class="nc" id="L18">  public Move() {</span>
+<span class="nc" id="L19">    this._direction = Direction.Unknown;</span>
+<span class="nc" id="L20">    this._wasTried = false;</span>
+<span class="nc" id="L21">  }</span>
+
+<span class="fc" id="L23">  public Move(Direction direction) {</span>
+<span class="fc" id="L24">    this._direction = direction;</span>
+<span class="fc" id="L25">    this._wasTried = false;</span>
+<span class="fc" id="L26">  }</span>
+
+  public Direction getDirection() {
+<span class="nc" id="L29">    return _direction;</span>
+  }
+
+  public boolean getWasTried() {
+<span class="nc" id="L33">    return _wasTried;</span>
+  }
+
+  public void setDirection(Direction value) {
+<span class="nc" id="L37">    this._direction = value;</span>
+<span class="nc" id="L38">  }</span>
+
+  public void setWasTried(boolean value) {
+<span class="fc" id="L41">    _wasTried = true;</span>
+<span class="fc" id="L42">  }</span>
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.4.201312101107</span></div></body></html>

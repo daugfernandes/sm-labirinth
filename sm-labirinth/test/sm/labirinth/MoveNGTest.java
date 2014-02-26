@@ -44,26 +44,31 @@ public class MoveNGTest {
     @Test
     public void testGetDirection() {
         System.out.println("getDirection");
-        Move instance = new Move();
-        Direction expResult = null;
+        Move instance = new Move(Direction.North);
+        Direction expResult = Direction.North;
         Direction result = instance.getDirection();
         assertEquals(result, expResult);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of getWasTried method, of class Move.
      */
     @Test
-    public void testGetWasTried() {
+    public void testGetWasTriedFalse() {
         System.out.println("getWasTried");
-        Move instance = new Move();
+        Move instance = new Move(Direction.East);
         boolean expResult = false;
         boolean result = instance.getWasTried();
         assertEquals(result, expResult);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    }
+
+    @Test
+    public void testGetWasTriedTrue() {
+        System.out.println("getWasTried");
+        Move instance = new Move(Direction.East);
+        instance.setWasTried(true);
+        boolean expResult = true;
+        boolean result = instance.getWasTried();
     }
 
     /**
