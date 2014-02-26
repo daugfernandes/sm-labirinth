@@ -12,56 +12,88 @@ package sm.labirinth;
  */
 public class Cell {
 
-    int _x;
-    int _y;
-    PossibleMoves _possibleMoves;
+  private int _x;
+  private int _y;
+  private boolean _isWall;
+  private PossibleMoves _possibleMoves;
 
-    public Cell() {
-        this(-1, -1);
-    }
+  public Cell() {
+    this(-1, -1, true);
+  }
 
-    public Cell(int x, int y) {
-        this._x = x;
-        this._y = y;
-        this._possibleMoves = new PossibleMoves();
-    }
+  public Cell(int x, int y, boolean isWall) {
+    this._x = x;
+    this._y = y;
+    this._possibleMoves = new PossibleMoves();
+    this._isWall = isWall;
+  }
 
-    // just a way to tell the cell was properly constructed
-    public boolean inUse() {
-        return (this._x >= 0 && this._y >= 0);
-    }
-    
-    public boolean addPossibleMove(Move move) {
-        return _possibleMoves.addMove(move);
-    }   
-    
-    public Move getNextPossibleMove() {
-        return _possibleMoves.getNextPossibleMove();
-    }
+  // just a way to tell the cell was properly constructed
+  public boolean inUse() {
+    return (this._x >= 0 && this._y >= 0);
+  }
 
-    public PossibleMoves getPossibleMoves() {
-        return _possibleMoves;
+  public boolean addPossibleMove(Move move) {
+    return _possibleMoves.addMove(move);
+  }
+
+  public Move getNextPossibleMove() {
+    return _possibleMoves.getNextPossibleMove();
+  }
+
+  public PossibleMoves getPossibleMoves() {
+    return _possibleMoves;
+  }
+
+  public void SetIsWall() {
+    _isWall = true;
+  }
+
+  public void SetIsPathWay() {
+    _isWall = false;
+  }
+
+  public boolean IsPathWay() {
+    return !_isWall;
+  }
+
+  public boolean IsWall() {
+    return _isWall;
+  }
+
+  public int getX() {
+    return _x;
+  }
+
+  public int getY() {
+    return _y;
+  }
+
+  /**
+   * Makes a next (forward) move
+   */
+  public void makeNextMove() {
+
+    Move nextMove = this.getNextPossibleMove();
+    Direction dir = nextMove.getDirection();
+    if (dir == Direction.North) {
+      this._y++;
+    } else if (dir == Direction.South) {
+      this._y--;
+    } else if (dir == Direction.West) {
+      this._x--;
+    } else if (dir == Direction.East) {
+      this._x++;
     }
-    
-    /**
-     * Makes a next (forward) move
-     */
-    public void makeNextMove() {
-        
-        Move nextMove = this.getNextPossibleMove();
-                
-        if (nextMove._direction == Direction.North) this._y++;
-        else if (nextMove._direction == Direction.South) this._y--;
-        else if (nextMove._direction == Direction.West) this._x--;
-        else if (nextMove._direction == Direction.East) this._x++;
-    }
-    
-    /**
-     * Moves to an other cell (used in backtracking)
-     * @param other 
-     */
-    public void moveTo(Cell other) {
-        this._x = other._x;
-        this._y = other._y;
-    }
+  }
+
+  /**
+   * Moves to an other cell (used in backtracking)
+   *
+   * @param other
+   */
+  public void moveTo(Cell other) {
+    this._x = other._x;
+    this._y = other._y;
+  }
 }

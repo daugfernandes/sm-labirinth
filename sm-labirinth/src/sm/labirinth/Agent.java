@@ -93,7 +93,7 @@ public class Agent extends jade.core.Agent {
                 // Do some backtracking
                 else {
                     // While the next move is a tried cell ...
-                    while (backTrack.peek().getNextPossibleMove()._wasTried) {
+                    while (backTrack.peek().getNextPossibleMove().getWasTried()) {
                         
                         // Pop the cell from backtracking
                         Cell backCell = backTrack.pop();
