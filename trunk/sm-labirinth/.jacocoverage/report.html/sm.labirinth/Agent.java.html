@@ -3,41 +3,149 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package sm.labirinth;
 
 import java.util.Stack;
+import jade.core.behaviours.SimpleBehaviour;
+import jade.core.behaviours.ParallelBehaviour;
+import jade.core.behaviours.SequentialBehaviour;
 
 /**
  *
  * @author david
  */
 public class Agent extends jade.core.Agent {
-
-    String name;
     Labirinth _labirinth;
     Stack _path;
     Cell _home;
 
     @Override
     protected void setup() {
-// Printout a welcome message
-<span class="nc" id="L24">        System.out.println(&quot;Hello! Buyer-agent &quot; + getAID().getName() + &quot; is ready.&quot;);</span>
-<span class="nc" id="L25">    }</span>
+        // Printout a welcome message
+<span class="nc" id="L26">        System.out.println(&quot;Hello! Agent &quot; + getAID().getName() + &quot; is ready.&quot;);</span>
+        
+        // Creates new parallel behaviour for concurrency
+<span class="nc" id="L29">        ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ANY);</span>
+        
+        // Creates new sequential behaviour for Search and Offer
+<span class="nc" id="L32">        SequentialBehaviour sb = new SequentialBehaviour();</span>
+        
+        // Adds the SearchExit and OfferExit behaviours to the sequential behaviour
+<span class="nc" id="L35">        sb.addSubBehaviour(new SearchExit());</span>
+<span class="nc" id="L36">        sb.addSubBehaviour(new OfferExit());</span>
+        
+        // Adds the SB and ListenToOffers behaviours to the PB
+<span class="nc" id="L39">        pb.addSubBehaviour(sb);</span>
+<span class="nc" id="L40">        pb.addSubBehaviour(new ListenToOffers());</span>
+        
+        // Adds the PB to the agent
+<span class="nc" id="L43">        this.addBehaviour(pb);</span>
+<span class="nc" id="L44">    }</span>
 
-<span class="nc" id="L27">    public Agent(Labirinth labirinth, Cell home) {</span>
-<span class="nc" id="L28">        this._labirinth = labirinth;</span>
-<span class="nc" id="L29">        this._home = home;</span>
-<span class="nc" id="L30">        _path = new Stack();</span>
-<span class="nc" id="L31">        _path.push(home);</span>
-<span class="nc" id="L32">    }</span>
-
+<span class="nc" id="L46">    public Agent(Labirinth labirinth, Cell home) {</span>
+<span class="nc" id="L47">        this._labirinth = labirinth;</span>
+<span class="nc" id="L48">        this._home = home;</span>
+<span class="nc" id="L49">        _path = new Stack();</span>
+<span class="nc" id="L50">        _path.push(home);</span>
+<span class="nc" id="L51">    }</span>
+    
     public boolean ExitFound() {
-<span class="nc" id="L35">        return _path.peek().equals(_labirinth._exit);</span>
+<span class="nc" id="L54">        return _path.peek().equals(_labirinth.getExit());</span>
     }
-
+    
     public Cell Move() {
         // try to move;
-<span class="nc" id="L40">        return null;</span>
+<span class="nc" id="L59">        return null;</span>
+    }
+    
+    // Searches for the exit if the labyrinth
+<span class="nc" id="L63">    private class SearchExit extends SimpleBehaviour {</span>
+
+        @Override
+        public void action() {
+          
+          // JOÃO ------------------
+          // _path seria a stack para suportar isto!!!!!
+<span class="nc" id="L70">            Stack&lt;Cell&gt; backTrack = new Stack();</span>
+<span class="nc" id="L71">            Cell currentPosition = _home;</span>
+            
+            // Run until the exit is found
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            while (!ExitFound()) {</span>
+<span class="nc" id="L75">                Move nextMove = currentPosition.getNextPossibleMove();</span>
+                
+                // Consider the case where only one move is possible ... fix this
+                // ... one possible move code ...
+                
+                // If there is a possible move ...
+<span class="nc bnc" id="L81" title="All 2 branches missed.">                if (nextMove != null) {</span>
+                    // Set the move as tried
+<span class="nc" id="L83">                    currentPosition.getNextPossibleMove().setWasTried(true);</span>
+                    
+                    /* Store the cell for backtracking only if
+                        there is more than one possible move */
+<span class="nc bnc" id="L87" title="All 2 branches missed.">                    if (currentPosition.getNextPossibleMove() != null)</span>
+<span class="nc" id="L88">                        backTrack.push(currentPosition);</span>
+                    
+                    // Make a move
+<span class="nc" id="L91">                    currentPosition.makeNextMove();</span>
+                }
+                // Do some backtracking
+                else {
+                    // While the next move is a tried cell ...
+<span class="nc bnc" id="L96" title="All 2 branches missed.">                    while (backTrack.peek().getNextPossibleMove().getWasTried()) {</span>
+                        
+                        // Pop the cell from backtracking
+<span class="nc" id="L99">                        Cell backCell = backTrack.pop();</span>
+                        
+                        // Make the backtrack move
+<span class="nc" id="L102">                        currentPosition.moveTo(backCell);</span>
+<span class="nc" id="L103">                    }</span>
+                }
+<span class="nc" id="L105">            }</span>
+<span class="nc" id="L106">        }</span>
+
+        @Override
+        public boolean done() {
+<span class="nc" id="L110">            return ExitFound();</span>
+        }
+    }
+    
+    // Searches for the exit if the labyrinth
+<span class="nc" id="L115">    private class OfferExit extends SimpleBehaviour {</span>
+        // ...
+        
+        @Override
+        public void action() {
+<span class="nc" id="L120">            throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.</span>
+        }
+
+        @Override
+        public boolean done() {
+<span class="nc" id="L125">            throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.</span>
+        }
+    }
+    
+    // Listens to offers from other agents / the referee
+<span class="nc" id="L130">    private class ListenToOffers extends SimpleBehaviour {</span>
+
+        @Override
+        public void action() {
+            /*
+            if (!proposals.size()) return
+            else {
+                while (!proposals.size()) {
+                    // try to negotiate
+                }
+            }
+            */
+<span class="nc" id="L142">        }</span>
+
+        @Override
+        public boolean done() {
+<span class="nc" id="L146">            throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.</span>
+        }
+        
     }
 
 }

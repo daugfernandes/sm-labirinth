@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Referee.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;sm-labirinth&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">sm.labirinth</a> &gt; <span class="el_source">Referee.java</span></div><h1>Referee.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package sm.labirinth;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ *
+ * @author david.paiva.fernandes@gmail.com
+ * @author joaorodr84@gmail.com
+ */
+public class Referee extends jade.core.Agent {
+
+  private static final long serialVersionUID = 1L;
+
+  private Labirinth _labirinth;
+  private List&lt;Agent&gt; _agents;
+
+<span class="nc" id="L25">  public Referee(String labirinthFilename) throws IOException {</span>
+<span class="nc" id="L26">    this._labirinth = new Labirinth(labirinthFilename);</span>
+<span class="nc" id="L27">    this._agents = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L28">  }</span>
+
+  public List&lt;Agent&gt; getAgents() {
+<span class="nc" id="L31">    return Collections.unmodifiableList(_agents);</span>
+  }
+
+  public Labirinth getLabirinth() {
+<span class="nc" id="L35">    return _labirinth;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.4.201312101107</span></div></body></html>

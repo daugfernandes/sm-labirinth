@@ -5,6 +5,13 @@
  */
 package sm.labirinth;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 /**
  *
  * @author david.paiva.fernandes@gmail.com
@@ -12,17 +19,143 @@ package sm.labirinth;
  */
 public class Labirinth {
 
-    Cell[][] _cells;
-    Cell _exit;
+  private Cell[][] _cells;
+  private Cell _exit;
 
-    public Labirinth() {
-        // by default
-<span class="nc" id="L20">        this(10, 10, new Cell(10, 10));</span>
-<span class="nc" id="L21">    }</span>
+  public Labirinth() {
+    // by default
+<span class="nc" id="L27">    this(10, 10, new Cell(10, 10, true));</span>
+<span class="nc" id="L28">  }</span>
 
-<span class="nc" id="L23">    public Labirinth(int width, int height, Cell exit) {</span>
-<span class="nc" id="L24">        _cells = new Cell[width][height];</span>
-<span class="nc" id="L25">        _exit = exit;</span>
-<span class="nc" id="L26">    }</span>
+<span class="nc" id="L30">  public Labirinth(String labirinthFileName) throws IOException {</span>
+
+<span class="nc" id="L32">    String[] labirinthString = readTextFile(labirinthFileName);</span>
+<span class="nc" id="L33">    int exitX = -1;</span>
+
+    // find width and height end exit
+<span class="nc" id="L36">    int width = 0, height = 0;</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">    for (String row : labirinthString) {</span>
+<span class="nc" id="L38">      height++;</span>
+<span class="nc" id="L39">      width = Math.max(width, row.length());</span>
+<span class="nc" id="L40">      exitX = row.indexOf(&quot;#&quot;);</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">      if (exitX &gt;= 0) {</span>
+<span class="nc" id="L42">        _exit = new Cell(exitX, height - 1, true);</span>
+      }
+    }
+<span class="nc" id="L45">    _cells = new Cell[height][width];</span>
+
+    // build cells
+<span class="nc" id="L48">    int kRow = 0;</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">    for (String row : labirinthString) {</span>
+<span class="nc" id="L50">      int kCol = 0;</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">      for (byte ch : row.getBytes()) {</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (ch == '*') {</span>
+<span class="nc" id="L53">          _cells[kRow][kCol] = new Cell(kRow, kCol, true);</span>
+        } else {
+<span class="nc" id="L55">          _cells[kRow][kCol] = new Cell(kRow, kCol, false);</span>
+        }
+<span class="nc" id="L57">        kCol++;</span>
+      }
+<span class="nc" id="L59">      kRow++;</span>
+    }
+
+    // build possiblemoves
+<span class="nc bnc" id="L63" title="All 2 branches missed.">    for (int idxRow = 0; idxRow &lt; height; idxRow++) {</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">      for (int idxCol = 0; idxCol &lt; width; idxCol++) {</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (_cells[idxRow][idxCol].IsPathWay()) {</span>
+
+<span class="nc bnc" id="L67" title="All 2 branches missed.">          Cell cellWest = (idxCol &gt; 0 ? _cells[idxRow][idxCol - 1] : null);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">          Cell cellEast = (idxCol &lt; width - 1 ? _cells[idxRow][idxCol + 1] : null);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">          Cell cellNorth = (idxRow &gt; 0 ? _cells[idxRow - 1][idxCol] : null);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">          Cell cellSouth = (idxRow &lt; height - 1 ? _cells[idxRow + 1][idxCol] : null);</span>
+
+<span class="nc bnc" id="L72" title="All 4 branches missed.">          if (cellWest != null &amp;&amp; cellWest.IsPathWay()) {</span>
+<span class="nc" id="L73">            _cells[idxRow][idxCol].addPossibleMove(new Move(Direction.West));</span>
+          }
+<span class="nc bnc" id="L75" title="All 4 branches missed.">          if (cellEast != null &amp;&amp; cellEast.IsPathWay()) {</span>
+<span class="nc" id="L76">            _cells[idxRow][idxCol].addPossibleMove(new Move(Direction.East));</span>
+          }
+<span class="nc bnc" id="L78" title="All 4 branches missed.">          if (cellNorth != null &amp;&amp; cellNorth.IsPathWay()) {</span>
+<span class="nc" id="L79">            _cells[idxRow][idxCol].addPossibleMove(new Move(Direction.North));</span>
+          }
+<span class="nc bnc" id="L81" title="All 4 branches missed.">          if (cellSouth != null &amp;&amp; cellSouth.IsPathWay()) {</span>
+<span class="nc" id="L82">            _cells[idxRow][idxCol].addPossibleMove(new Move(Direction.South));</span>
+          }
+        }
+      }
+    }
+<span class="nc" id="L87">  }</span>
+
+<span class="nc" id="L89">  public Labirinth(int width, int height, Cell exit) {</span>
+<span class="nc" id="L90">    _cells = new Cell[height][width];</span>
+<span class="nc" id="L91">    _exit = exit;</span>
+<span class="nc" id="L92">  }</span>
+
+  private String[] readTextFile(String fileName) throws FileNotFoundException, IOException {
+
+<span class="nc" id="L96">    StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L97">    BufferedReader br = new BufferedReader(new FileReader(fileName));</span>
+    try {
+<span class="nc" id="L99">      String line = br.readLine();</span>
+
+<span class="nc bnc" id="L101" title="All 2 branches missed.">      while (line != null) {</span>
+<span class="nc" id="L102">        sb.append(line);</span>
+<span class="nc" id="L103">        sb.append(System.lineSeparator());</span>
+<span class="nc" id="L104">        line = br.readLine();</span>
+      }
+    } finally {
+<span class="nc" id="L107">      br.close();</span>
+<span class="nc" id="L108">    }</span>
+<span class="nc" id="L109">    return sb.toString().split(System.lineSeparator());</span>
+  }
+
+  public Cell getExit() {
+<span class="nc" id="L113">    return _exit;</span>
+  }
+
+  public void Draw(Graphics graphics) {
+
+<span class="nc" id="L118">    int height = _cells.length;</span>
+<span class="nc" id="L119">    int width = _cells[0].length; // is squared for sure</span>
+
+<span class="nc bnc" id="L121" title="All 2 branches missed.">    for (int idxRow = 0; idxRow &lt; height; idxRow++) {</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">      for (int idxCol = 0; idxCol &lt; width; idxCol++) {</span>
+<span class="nc" id="L123">        Cell thisCell = _cells[idxRow][idxCol];</span>
+<span class="nc" id="L124">        graphics.setColor(Color.BLUE);</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        if (thisCell.IsWall()) {</span>
+<span class="nc" id="L126">          graphics.fillRect(idxCol * 20, idxRow * 20, 20, 20);</span>
+        } else {
+<span class="nc" id="L128">          graphics.drawRect(idxCol * 20, idxRow * 20, 20, 20);</span>
+<span class="nc" id="L129">          graphics.setColor(Color.RED);</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">          if (thisCell.getPossibleMoves().containsMove(Direction.North)) {</span>
+<span class="nc" id="L131">            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 10, idxRow * 20 + 5);</span>
+<span class="nc" id="L132">            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 5, idxCol * 20 + 11, idxRow * 20 + 6);</span>
+<span class="nc" id="L133">            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 5, idxCol * 20 + 9, idxRow * 20 + 6);</span>
+          }
+<span class="nc bnc" id="L135" title="All 2 branches missed.">          if (thisCell.getPossibleMoves().containsMove(Direction.South)) {</span>
+<span class="nc" id="L136">            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 10, idxRow * 20 + 15);</span>
+<span class="nc" id="L137">            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 15, idxCol * 20 + 11, idxRow * 20 + 14);</span>
+<span class="nc" id="L138">            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 15, idxCol * 20 + 9, idxRow * 20 + 14);</span>
+          }
+<span class="nc bnc" id="L140" title="All 2 branches missed.">          if (thisCell.getPossibleMoves().containsMove(Direction.East)) {</span>
+<span class="nc" id="L141">            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 15, idxRow * 20 + 10);</span>
+<span class="nc" id="L142">            graphics.drawLine(idxCol * 20 + 15, idxRow * 20 + 10,idxCol * 20 + 14, idxRow * 20 + 11);</span>
+<span class="nc" id="L143">            graphics.drawLine(idxCol * 20 + 15, idxRow * 20 + 10,idxCol * 20 + 14, idxRow * 20 + 9);</span>
+          }
+<span class="nc bnc" id="L145" title="All 2 branches missed.">          if (thisCell.getPossibleMoves().containsMove(Direction.West)) {</span>
+<span class="nc" id="L146">            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 5, idxRow * 20 + 10);</span>
+<span class="nc" id="L147">            graphics.drawLine(idxCol * 20 + 5, idxRow * 20 + 10, idxCol * 20 + 6, idxRow * 20 + 11);</span>
+<span class="nc" id="L148">            graphics.drawLine(idxCol * 20 + 5, idxRow * 20 + 10, idxCol * 20 + 6, idxRow * 20 + 9);</span>
+          }
+        }
+      }
+    }
+
+    // exit
+<span class="nc" id="L155">    graphics.setColor(Color.YELLOW);</span>
+<span class="nc" id="L156">    graphics.drawOval(_exit.getX() * 20 + 10 - 2, _exit.getY() * 20 + 10 - 2, 4, 4);</span>
+
+<span class="nc" id="L158">  }</span>
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.4.201312101107</span></div></body></html>
