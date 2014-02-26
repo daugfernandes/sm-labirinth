@@ -129,15 +129,23 @@ public class Labirinth {
           graphics.setColor(Color.RED);
           if (thisCell.getPossibleMoves().containsMove(Direction.North)) {
             graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 10, idxRow * 20 + 5);
+            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 5, idxCol * 20 + 11, idxRow * 20 + 6);
+            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 5, idxCol * 20 + 9, idxRow * 20 + 6);
           }
           if (thisCell.getPossibleMoves().containsMove(Direction.South)) {
             graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 10, idxRow * 20 + 15);
+            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 15, idxCol * 20 + 11, idxRow * 20 + 14);
+            graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 15, idxCol * 20 + 9, idxRow * 20 + 14);
           }
           if (thisCell.getPossibleMoves().containsMove(Direction.East)) {
             graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 15, idxRow * 20 + 10);
+            graphics.drawLine(idxCol * 20 + 15, idxRow * 20 + 10,idxCol * 20 + 14, idxRow * 20 + 11);
+            graphics.drawLine(idxCol * 20 + 15, idxRow * 20 + 10,idxCol * 20 + 14, idxRow * 20 + 9);
           }
           if (thisCell.getPossibleMoves().containsMove(Direction.West)) {
             graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 5, idxRow * 20 + 10);
+            graphics.drawLine(idxCol * 20 + 5, idxRow * 20 + 10, idxCol * 20 + 6, idxRow * 20 + 11);
+            graphics.drawLine(idxCol * 20 + 5, idxRow * 20 + 10, idxCol * 20 + 6, idxRow * 20 + 9);
           }
         }
       }
@@ -145,7 +153,7 @@ public class Labirinth {
 
     // exit
     graphics.setColor(Color.YELLOW);
-    graphics.drawOval(_exit.getX() * 20 + 10 - 4, _exit.getY() * 20 + 10 - 4, 8, 8);
+    graphics.drawOval(_exit.getX() * 20 + 10 - 2, _exit.getY() * 20 + 10 - 2, 4, 4);
 
   }
 
