@@ -44,5 +44,4 @@ public class PossibleMoves {
     public List<Move> getMoves() {
         return _moves;
     }
-
 }

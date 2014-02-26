@@ -9,6 +9,7 @@ package sm.labirinth;
 import java.util.Stack;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
+import jade.core.behaviours.SequentialBehaviour;
 
 /**
  *
@@ -24,12 +25,19 @@ public class Agent extends jade.core.Agent {
         // Printout a welcome message
         System.out.println("Hello! Agent " + getAID().getName() + " is ready.");
         
-        // Create new parallel behaviour for concurrency
+        // Creates new parallel behaviour for concurrency
         ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ANY);
         
-        // Adds the SearchExit and Negotiate behaviours to the PB
-        pb.addSubBehaviour(new SearchExit());
-        pb.addSubBehaviour(new Negotiate());
+        // Creates new sequential behaviour for Search and Offer
+        SequentialBehaviour sb = new SequentialBehaviour();
+        
+        // Adds the SearchExit and OfferExit behaviours to the sequential behaviour
+        sb.addSubBehaviour(new SearchExit());
+        sb.addSubBehaviour(new OfferExit());
+        
+        // Adds the SB and ListenToOffers behaviours to the PB
+        pb.addSubBehaviour(sb);
+        pb.addSubBehaviour(new ListenToOffers());
         
         // Adds the PB to the agent
         this.addBehaviour(pb);
@@ -100,8 +108,23 @@ public class Agent extends jade.core.Agent {
         }
     }
     
-    // Negotiates with other agents / with the referee
-    private class Negotiate extends SimpleBehaviour {
+    // Searches for the exit if the labyrinth
+    private class OfferExit extends SimpleBehaviour {
+        // ...
+        
+        @Override
+        public void action() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public boolean done() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+    
+    // Listens to offers from other agents / the referee
+    private class ListenToOffers extends SimpleBehaviour {
 
         @Override
         public void action() {
