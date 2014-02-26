@@ -15,33 +15,44 @@ import java.util.List;
  */
 public class PossibleMoves {
 
-    List<Move> _moves;
+  List<Move> _moves;
 
-    public PossibleMoves() {
-        _moves = new ArrayList<>();
+  public PossibleMoves() {
+    _moves = new ArrayList<>();
+  }
+
+  public boolean addMove(Move move) {
+    // lets find out if this move's direction already exists
+    for (Move m : _moves) {
+      if (m.getDirection().equals(move.getDirection())) // oops! can't go there .... twice!!!!
+      {
+        return false;
+      }
     }
+    _moves.add(move);
+    return true;
+  }
 
-    public boolean addMove(Move move) {
-        // lets find out if this move's direction already exists
-        for(Move m: _moves) {
-            if(m.getDirection().equals(move.getDirection()))
-                // oops! can't go there .... twice!!!!
-                return false;
-        }
-        _moves.add(move);
+  public Move getNextPossibleMove() {
+    for (Move m : _moves) {
+      if (!m.getWasTried()) {
+        return m;
+      }
+    }
+    return null;
+  }
+
+  public List<Move> getMoves() {
+    return _moves;
+  }
+
+  public boolean containsMove(Direction dir) {
+    for (Move m : _moves) {
+      if (m.getDirection() == dir) {
         return true;
+      }
     }
+    return false;
+  }
 
-    public Move getNextPossibleMove() {
-        for (Move m : _moves) {
-            if (!m.getWasTried()) {
-                return m;
-            }
-        }
-        return null;
-    }
-    
-    public List<Move> getMoves() {
-        return _moves;
-    }
 }

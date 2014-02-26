@@ -49,7 +49,7 @@ public class CellNGTest {
     @Test
     public void testInUse() {
         System.out.println("InUse");
-        Cell instance = new Cell(10, 10);
+        Cell instance = new Cell(10, 10, false);
         boolean expResult = true;
         boolean result = instance.inUse();
         assertEquals(result, expResult);
