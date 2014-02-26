@@ -51,7 +51,7 @@ public class Agent extends jade.core.Agent {
     }
     
     public boolean ExitFound() {
-        return _path.peek().equals(_labirinth._exit);
+        return _path.peek().equals(_labirinth.getExit());
     }
     
     public Cell Move() {
@@ -64,6 +64,9 @@ public class Agent extends jade.core.Agent {
 
         @Override
         public void action() {
+          
+          // JOÃO ------------------
+          // _path seria a stack para suportar isto!!!!!
             Stack<Cell> backTrack = new Stack();
             Cell currentPosition = _home;
             
