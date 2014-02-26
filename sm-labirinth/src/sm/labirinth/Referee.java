@@ -31,8 +31,8 @@ public class Referee extends jade.core.Agent {
     return Collections.unmodifiableList(_agents);
   }
 
-  public Labirinth getLaiorinth() {
+  public Labirinth getLabirinth() {
     return _labirinth;
   }
-  
+
 }
