@@ -4,17 +4,16 @@
  * and open the template in the editor.
  */
 
-package sm.labirinth;
-
 /**
  *
  * @author david.paiva.fernandes@gmail.com
  * @author joaorodr84@gmail.com
  */
 public enum Direction {
-    Unknown,
-    North,
-    South,
-    East,
-    West
+
+  Unknown,
+  North,
+  South,
+  East,
+  West
 }

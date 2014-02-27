@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sm.labirinth;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -100,13 +99,13 @@ public class Labirinth {
 
       while (line != null) {
         sb.append(line);
-        sb.append(System.lineSeparator());
+        sb.append("\n");
         line = br.readLine();
       }
     } finally {
       br.close();
     }
-    return sb.toString().split(System.lineSeparator());
+    return sb.toString().split("\n");
   }
 
   public Cell getExit() {
@@ -139,8 +138,8 @@ public class Labirinth {
           }
           if (thisCell.getPossibleMoves().containsMove(Direction.East)) {
             graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 15, idxRow * 20 + 10);
-            graphics.drawLine(idxCol * 20 + 15, idxRow * 20 + 10,idxCol * 20 + 14, idxRow * 20 + 11);
-            graphics.drawLine(idxCol * 20 + 15, idxRow * 20 + 10,idxCol * 20 + 14, idxRow * 20 + 9);
+            graphics.drawLine(idxCol * 20 + 15, idxRow * 20 + 10, idxCol * 20 + 14, idxRow * 20 + 11);
+            graphics.drawLine(idxCol * 20 + 15, idxRow * 20 + 10, idxCol * 20 + 14, idxRow * 20 + 9);
           }
           if (thisCell.getPossibleMoves().containsMove(Direction.West)) {
             graphics.drawLine(idxCol * 20 + 10, idxRow * 20 + 10, idxCol * 20 + 5, idxRow * 20 + 10);
