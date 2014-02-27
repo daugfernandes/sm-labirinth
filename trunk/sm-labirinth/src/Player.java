@@ -4,10 +4,13 @@
  * and open the template in the editor.
  */
 
+import jade.core.AID;
 import java.util.Stack;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
+import jade.lang.acl.ACLMessage;
+import java.io.Serializable;
 
 /**
  *
@@ -16,7 +19,7 @@ import jade.core.behaviours.SequentialBehaviour;
 public class Player extends jade.core.Agent {
 
   Labirinth _labirinth;
-  Stack _path;
+  Stack<Cell> _path;        // J: acrescentei <Cell> para o programa saber que é uma stack de células
   Cell _home;
 
   @Override
@@ -46,7 +49,7 @@ public class Player extends jade.core.Agent {
     this._labirinth = labirinth;
     this._home = home;
     _path = new Stack();
-    _path.push(home);
+//    _path.push(home);
   }
 
   public boolean ExitFound() {
@@ -63,38 +66,28 @@ public class Player extends jade.core.Agent {
 
     @Override
     public void action() {
-
-      // JOÃO ------------------
-      // _path seria a stack para suportar isto!!!!!
-      Stack<Cell> backTrack = new Stack();
       Cell currentPosition = _home;
 
       // Run until the exit is found
       while (!ExitFound()) {
         Move nextMove = currentPosition.getNextPossibleMove();
-
-        // Consider the case where only one move is possible ... fix this
-        // ... one possible move code ...
+        
         // If there is a possible move ...
         if (nextMove != null) {
           // Set the move as tried
           currentPosition.getNextPossibleMove().setWasTried(true);
-
-          /* Store the cell for backtracking only if
-           there is more than one possible move */
-          if (currentPosition.getNextPossibleMove() != null) {
-            backTrack.push(currentPosition);
-          }
-
+          
+          // Keep the current position in the path
+          _path.push(currentPosition);
+          
           // Make a move
           currentPosition.makeNextMove();
         } // Do some backtracking
         else {
           // While the next move is a tried cell ...
-          while (backTrack.peek().getNextPossibleMove().getWasTried()) {
-
+          while (_path.peek().getNextPossibleMove().getWasTried()) {
             // Pop the cell from backtracking
-            Cell backCell = backTrack.pop();
+            Cell backCell = _path.pop();
 
             // Make the backtrack move
             currentPosition.moveTo(backCell);
@@ -109,13 +102,17 @@ public class Player extends jade.core.Agent {
     }
   }
 
-  // Searches for the exit if the labyrinth
+  // Informs that the exit of the labyrinth was found
   private class OfferExit extends SimpleBehaviour {
     // ...
 
     @Override
     public void action() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String msgToSend = "exit found";
+        ACLMessage exitFound = new ACLMessage(ACLMessage.INFORM);
+        exitFound.addReceiver(new AID("referee", AID.ISLOCALNAME));
+        exitFound.setContent(msgToSend);
+        send(exitFound);
     }
 
     @Override
@@ -129,14 +126,19 @@ public class Player extends jade.core.Agent {
 
     @Override
     public void action() {
-      /*
-       if (!proposals.size()) return
-       else {
-       while (!proposals.size()) {
-       // try to negotiate
-       }
-       }
-       */
+        ACLMessage msg = receive();
+        
+        if (msg != null) {
+            String msgExpected = "exit found";
+            
+            // Process the received message
+            String msgReceived = msg.getContent();
+            
+            // Check the received message
+            if (msgReceived.equals(msgExpected)) {
+                // Terminate agent
+            }
+        }
     }
 
     @Override

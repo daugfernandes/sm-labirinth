@@ -16,7 +16,7 @@ import java.io.IOException;
  * @author david.paiva.fernandes@gmail.com
  * @author joaorodr84@gmail.com
  */
-public class Labirinth {
+public class Labirinth implements java.io.Serializable {
 
   private Cell[][] _cells;
   private Cell _exit;
