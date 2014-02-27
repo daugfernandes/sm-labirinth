@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sm.labirinth;
 
 /**
  *
@@ -96,4 +95,10 @@ public class Cell {
     this._x = other._x;
     this._y = other._y;
   }
+
+  @Override
+  public String toString() {
+    return String.format("Cell @(%d,%d)", this._x, this._y);
+  }
+
 }
