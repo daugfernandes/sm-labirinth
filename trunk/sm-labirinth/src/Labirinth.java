@@ -49,8 +49,8 @@ public class Labirinth implements java.io.Serializable {
       int kCol = 0;
       for (byte ch : row.getBytes()) {
         if (ch == '*') {
-          _cells[kRow][kCol] = new Cell(kRow, kCol, true);
-        } else {
+          _cells[kRow][kCol] = new Cell(kRow, kCol, true); // '*' isWall
+        } else { // tudo o resto é passagem
           _cells[kRow][kCol] = new Cell(kRow, kCol, false);
         }
         kCol++;
