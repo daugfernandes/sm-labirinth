@@ -5,12 +5,15 @@
  */
 
 import jade.core.AID;
+import jade.core.behaviours.CyclicBehaviour;
 import java.util.Stack;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
-import java.io.Serializable;
+import jade.lang.acl.UnreadableException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,6 +29,9 @@ public class Player extends jade.core.Agent {
   protected void setup() {
     // Printout a welcome message
     System.out.println("Hello! Agent " + getAID().getName() + " is ready.");
+    
+    // Creates an initial sequential behaviour for GetLab and PB
+    SequentialBehaviour isb = new SequentialBehaviour();
 
     // Creates new parallel behaviour for concurrency
     ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ANY);
@@ -40,6 +46,10 @@ public class Player extends jade.core.Agent {
     // Adds the SB and ListenToOffers behaviours to the PB
     pb.addSubBehaviour(sb);
     pb.addSubBehaviour(new ListenToOffers());
+    
+    // Adds the GetLab and PB behaviour to ISB
+    isb.addSubBehaviour(new GetLab());
+    isb.addSubBehaviour(pb);
 
     // Adds the PB to the agent
     this.addBehaviour(pb);
@@ -64,6 +74,25 @@ public class Player extends jade.core.Agent {
   public Cell Move() {
     // try to move;
     return null;
+  }
+  
+  // Waits for the referee to transmit the labyrinth object and processes it
+  private class GetLab extends CyclicBehaviour {
+
+        @Override
+        public void action() {
+            ACLMessage msg = receive();
+
+            if (msg != null) {
+                // Process the received message
+                try {
+                    _labirinth = (Labirinth) msg.getContentObject();
+                } catch (UnreadableException ex) {
+                    Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else block();
+        }
   }
 
   // Searches for the exit if the labyrinth
@@ -113,7 +142,7 @@ public class Player extends jade.core.Agent {
 
     @Override
     public void action() {
-        String msgToSend = "exit found";
+        String msgToSend = "EXITFOUND";
         ACLMessage exitFound = new ACLMessage(ACLMessage.INFORM);
         exitFound.addReceiver(new AID("referee", AID.ISLOCALNAME));
         exitFound.setContent(msgToSend);
@@ -127,14 +156,14 @@ public class Player extends jade.core.Agent {
   }
 
   // Listens to offers from other agents / the referee
-  private class ListenToOffers extends SimpleBehaviour {
+  private class ListenToOffers extends CyclicBehaviour {
 
     @Override
     public void action() {
         ACLMessage msg = receive();
         
         if (msg != null) {
-            String msgExpected = "exit found";
+            String msgExpected = "EXITFOUND";
             
             // Process the received message
             String msgReceived = msg.getContent();
@@ -144,13 +173,8 @@ public class Player extends jade.core.Agent {
                 // Terminate agent
             }
         }
+        else block();
     }
-
-    @Override
-    public boolean done() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
   }
 
 }
