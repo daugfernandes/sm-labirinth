@@ -5,11 +5,14 @@
  */
 
 import jade.core.AID;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +28,7 @@ public class Referee extends jade.core.Agent {
 
   private Labirinth _labirinth;
   private List<Player> _agents;
-  private AID[] _players;
+  private List<AID> _players;
 
   /*public Referee(String labirinthFilename) throws IOException {
    this._labirinth = new Labirinth(labirinthFilename);
@@ -44,6 +47,8 @@ public class Referee extends jade.core.Agent {
     System.out.println(String.format("LOG %s: Referee is starting.", getAID().getName()));
     Object[] args = getArguments();
     System.out.println(String.format("LOG %s: Args.size=%d [0]==%s", getAID().getName(), args.length, args[0]));
+
+    _players = new ArrayList<>();
 
     if (args.length > 0) {
       try {
@@ -64,6 +69,33 @@ public class Referee extends jade.core.Agent {
         } catch (FIPAException fe) {
           System.out.println(String.format("ERR %s: %s.", getAID().getName(), fe.getMessage()));
         }
+
+        // setup a cyclic behaviour to listen to players
+        addBehaviour(new CyclicBehaviour() {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void action() {
+            ACLMessage msg = receive();
+            if (msg != null) {
+              try {
+                String title = msg.getContent();
+                System.out.println(String.format("LOG %s: Message received from %s is {%s}", getAID().getName(), msg.getSender().getName(), title));
+                if (!_players.contains(msg.getSender())) {
+                  _players.add(msg.getSender());
+                  ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
+                  reply.addReceiver(msg.getSender());
+                  reply.setContentObject(_labirinth);
+                  myAgent.send(reply);
+                }
+
+              } catch (IOException ex) {
+                Logger.getLogger(Referee.class.getName()).log(Level.SEVERE, null, ex);
+              }
+
+            }
+          }
+        });
 
       } catch (IOException ex) {
         Logger.getLogger(Referee.class.getName()).log(Level.SEVERE, null, ex);

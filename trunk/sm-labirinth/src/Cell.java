@@ -9,7 +9,8 @@
  * @author david.paiva.fernandes@gmail.com
  * @author joaorodr84@gmail.com
  */
-public class Cell {
+public class Cell implements java.io.Serializable {
+  private static final long serialVersionUID = 1L;
 
   private int _x;
   private int _y;
