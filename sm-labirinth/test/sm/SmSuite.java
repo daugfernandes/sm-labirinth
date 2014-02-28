@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package sm;
 
 import org.junit.After;
@@ -36,5 +35,5 @@ public class SmSuite {
   @After
   public void tearDown() throws Exception {
   }
-  
+
 }

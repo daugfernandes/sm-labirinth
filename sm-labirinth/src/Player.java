@@ -14,6 +14,10 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,6 +30,7 @@ public class Player extends jade.core.Agent {
   Cell _home;
   private AID refereeAgent;
   private boolean refereeFound;
+  private boolean labirinthReceived;
 
   @Override
   protected void setup() {
@@ -37,23 +42,54 @@ public class Player extends jade.core.Agent {
     //_path = new Stack<Cell>();
     refereeFound = false;
     // search for a referee
-    DFAgentDescription template = new DFAgentDescription();
-    ServiceDescription sd = new ServiceDescription();
-    sd.setType("labirinth_referee");
-    template.addServices(sd);
 
-    try {
-      DFAgentDescription[] result = DFService.search(this, template);
-      if (result.length == 1) {
-        refereeAgent = result[0].getName();
-        refereeFound = true;
-        System.out.println(String.format("LOG %s: referee found AID: %s", getAID().getName(), refereeAgent.getName()));
-      } else {
-        System.out.println(String.format("WRN %s: zeros or more than one referee. #%d", getAID().getName(), result.length));
+    addBehaviour(new CyclicBehaviour() {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void action() {
+        try {
+          if (!refereeFound) {
+            DFAgentDescription template = new DFAgentDescription();
+            ServiceDescription sd = new ServiceDescription();
+            sd.setType("labirinth_referee");
+            template.addServices(sd);
+            DFAgentDescription[] result = DFService.search(myAgent, template);
+            if (result.length == 1) {
+              refereeAgent = result[0].getName();
+              refereeFound = true;
+              System.out.println(String.format("LOG %s: referee found AID: %s", getAID().getName(), refereeAgent.getName()));
+              ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+              msg.addReceiver(refereeAgent);
+              msg.setLanguage("jr");
+              msg.setOntology("labirinth-ontology");
+              msg.setContent("tungas");
+              send(msg);
+
+            } else {
+
+              System.out.println(String.format("WRN %s: zeros or more than one referee. #%d", getAID().getName(), result.length));
+            }
+          } else {
+            ACLMessage msg = receive();
+            if (msg != null) {
+              try {
+                Object obj = msg.getContentObject();
+                if (obj instanceof Labirinth) {
+                  _labirinth = (Labirinth) obj;
+                  System.out.println(String.format("LOG %s: Labirinth received Exit = %s", getAID().getName(), _labirinth.getExit().toString()));
+                }
+              } catch (UnreadableException ex) {
+                Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+              }
+
+            }
+          }
+        } catch (FIPAException ex) {
+          System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
+        }
       }
-    } catch (FIPAException fe) {
-      System.out.println(String.format("ERR %s: %s", getAID().getName(), fe.getMessage()));
-    }
+    });
 
     // Creates an initial sequential behaviour for GetLab and PB
     SequentialBehaviour isb = new SequentialBehaviour();

@@ -9,7 +9,7 @@
  * @author david.paiva.fernandes@gmail.com
  * @author joaorodr84@gmail.com
  */
-public class Move {
+public class Move implements java.io.Serializable {
 
   private Direction _direction;
   private boolean _wasTried;

@@ -12,7 +12,7 @@ import java.util.List;
  * @author david.paiva.fernandes@gmail.com
  * @author joaorodr84@gmail.com
  */
-public class PossibleMoves {
+public class PossibleMoves implements java.io.Serializable {
 
   List<Move> _moves;
 
