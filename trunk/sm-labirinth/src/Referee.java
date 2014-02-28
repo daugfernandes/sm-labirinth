@@ -41,7 +41,7 @@ public class Referee extends jade.core.Agent {
    }*/
   @Override
   protected void setup() {
-    System.out.println(String.format("LOG %s: Referee-agent is ready.", getAID().getName()));
+    System.out.println(String.format("LOG %s: Referee is starting.", getAID().getName()));
     Object[] args = getArguments();
     System.out.println(String.format("LOG %s: Args.size=%d [0]==%s", getAID().getName(), args.length, args[0]));
 
@@ -82,7 +82,7 @@ public class Referee extends jade.core.Agent {
     } catch (FIPAException fe) {
       System.out.println(String.format("ERR %s: %s.", getAID().getName(), fe.getMessage()));
     }
-    System.out.println(String.format("LOG %s: Referee-agent is terminating!", getAID().getName()));
+    System.out.println(String.format("LOG %s: Referee is terminating!", getAID().getName()));
   }
 
 }

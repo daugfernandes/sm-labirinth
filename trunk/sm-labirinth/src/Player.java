@@ -30,7 +30,7 @@ public class Player extends jade.core.Agent {
   @Override
   protected void setup() {
     // Printout a welcome message
-    System.out.println("Hello! Agent " + getAID().getName() + " is ready.");
+    System.out.println(String.format("LOG %S: Player is starting!", getAID().getName()));
 
     //this._labirinth = labirinth;
     //this._home = home;
@@ -82,7 +82,7 @@ public class Player extends jade.core.Agent {
 
   @Override
   protected void takeDown() {
-    System.out.println(String.format("LOG %s: Player-agent is terminating!", getAID().getName()));
+    System.out.println(String.format("LOG %s: Player is terminating!", getAID().getName()));
   }
 
   public boolean ExitFound() {
