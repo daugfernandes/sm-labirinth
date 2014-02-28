@@ -44,6 +44,11 @@ public class Player extends jade.core.Agent {
     // Adds the PB to the agent
     this.addBehaviour(pb);
   }
+  
+  @Override
+  protected void takeDown() {
+      System.out.println("LOG: Player-agent " + getAID().getName() + " is terminating!");
+  }
 
   public Player(Labirinth labirinth, Cell home) {
     this._labirinth = labirinth;
