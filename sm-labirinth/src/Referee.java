@@ -5,12 +5,15 @@
  */
 
 import jade.core.AID;
+import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.ReceiverBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +25,15 @@ import java.util.logging.Logger;
  * @author david.paiva.fernandes@gmail.com
  * @author joaorodr84@gmail.com
  */
-public class Referee extends jade.core.Agent {
+public class Referee extends Agent {
 
   private static final long serialVersionUID = 1L;
 
   private Labirinth _labirinth;
   private List<Player> _agents;
   private List<AID> _players;
+  private boolean boardFound = false;
+  private AID boardAgent;
 
   /*public Referee(String labirinthFilename) throws IOException {
    this._labirinth = new Labirinth(labirinthFilename);
@@ -70,7 +75,44 @@ public class Referee extends jade.core.Agent {
           System.out.println(String.format("ERR %s: %s.", getAID().getName(), fe.getMessage()));
         }
 
-        // Setup a cyclic behaviour to listen to players
+        addBehaviour(new CyclicBehaviour() {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void action() {
+            try {
+              if (!boardFound) {
+                DFAgentDescription template = new DFAgentDescription();
+                ServiceDescription sd = new ServiceDescription();
+                sd.setType("labirinth_board");
+                template.addServices(sd);
+                DFAgentDescription[] result = DFService.search(myAgent, template);
+                if (result.length == 1) {
+                  boardAgent = result[0].getName();
+                  boardFound = true;
+                  System.out.println(String.format("LOG %s: board found AID: %s", getAID().getName(), boardAgent.getName()));
+                  ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+                  msg.addReceiver(boardAgent);
+                  msg.setConversationId("lab");
+                  msg.setLanguage("jr");
+                  msg.setOntology("labirinth-ontology");
+                  msg.setContentObject(_labirinth);
+                  send(msg);
+
+                } else {
+
+                  System.out.println(String.format("WRN %s: zeros or more than one board. #%d", getAID().getName(), result.length));
+                }
+              }
+            } catch (FIPAException ex) {
+              System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
+            } catch (IOException ex) {
+              System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
+            }
+          }
+        });
+
+        // setup a cyclic behaviour to listen to players
         addBehaviour(new CyclicBehaviour() {
           private static final long serialVersionUID = 1L;
 

@@ -5,6 +5,7 @@
  */
 
 import jade.core.AID;
+import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import java.util.Stack;
 import jade.core.behaviours.SimpleBehaviour;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  *
  * @author david
  */
-public class Player extends jade.core.Agent {
+public class Player extends Agent {
 
   Labirinth _labirinth;
   Stack<Cell> _path;        // J: acrescentei <Cell> para o programa saber que é uma stack de células
