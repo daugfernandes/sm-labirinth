@@ -17,6 +17,7 @@ import java.io.IOException;
  * @author joaorodr84@gmail.com
  */
 public class Labirinth implements java.io.Serializable {
+
   private static final long serialVersionUID = 7L;
 
   private Cell[][] _cells;
@@ -94,21 +95,20 @@ public class Labirinth implements java.io.Serializable {
     _cells = new Cell[height][width];
     _exit = exit;
   }
-  
-  public int getWidth() {
-      return labWidth;
-  }
-  
-  public int getHeight() {
-      return labHeight;
-  }
-  
-  /*
-  public void setWasTried(int x, int y) {
-      this._cells[x][y]
-  }
-  */
 
+  public int getWidth() {
+    return labWidth;
+  }
+
+  public int getHeight() {
+    return labHeight;
+  }
+
+  /*
+   public void setWasTried(int x, int y) {
+   this._cells[x][y]
+   }
+   */
   private String[] readTextFile(String fileName) throws FileNotFoundException, IOException {
 
     StringBuilder sb = new StringBuilder();
@@ -130,15 +130,22 @@ public class Labirinth implements java.io.Serializable {
   public Cell getExit() {
     return _exit;
   }
-  
+
   public Cell getCell(int y, int x) {
-      return _cells[y][x];
+    return _cells[y][x];
   }
 
   public void Draw(Graphics graphics) {
 
+    if(graphics==null) {
+      return;
+    }
+    
     int height = _cells.length;
     int width = _cells[0].length; // is squared for sure
+
+    graphics.setColor(Color.BLACK);
+    graphics.fillRect(0, 0, getWidth(), getHeight());
 
     for (int idxRow = 0; idxRow < height; idxRow++) {
       for (int idxCol = 0; idxCol < width; idxCol++) {

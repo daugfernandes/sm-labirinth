@@ -12,6 +12,8 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,7 @@ public class Referee extends Agent {
 
   private Labirinth _labirinth;
   private HashMap<AID, Boolean> _players;
+  private HashMap<AID, Point> _playersPosition;
   private boolean boardFound = false;
   private AID boardAgent;
 
@@ -51,6 +54,7 @@ public class Referee extends Agent {
     System.out.println(String.format("LOG %s: Args.size=%d [0]==%s", getAID().getName(), args.length, args[0]));
 
     _players = new HashMap<>();
+    _playersPosition = new HashMap<>();
 
     if (args.length > 0) {
       try {
@@ -95,7 +99,7 @@ public class Referee extends Agent {
                   msg.setOntology("labirinth-ontology");
                   msg.setContentObject(_labirinth);
                   send(msg);
-                } 
+                }
               }
             } catch (FIPAException ex) {
               System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
@@ -144,6 +148,8 @@ public class Referee extends Agent {
                     TerminateBoard();
                     doDelete();
                   }
+                } else if (msg.getConversationId().equals("draw")) {
+                  BuildPlayersPosition(msg);
                 }
               } catch (IOException ex) {
                 Logger.getLogger(Referee.class.getName()).log(Level.SEVERE, null, ex);
@@ -159,6 +165,31 @@ public class Referee extends Agent {
       System.out.println(String.format("WRN %s: No Labirinth specified.", getAID().getName()));
       doDelete();
     }
+  }
+
+  private void BuildPlayersPosition(ACLMessage msg) {
+
+    if (!msg.getContent().isEmpty()) {
+      Integer y = Integer.parseInt(msg.getContent().split(";")[0]);
+      Integer x = Integer.parseInt(msg.getContent().split(";")[1]);
+
+      _playersPosition.put(msg.getSender(), new Point(x, y));
+
+      String result = "";
+      for (Point p : _playersPosition.values()) {
+        result += result.isEmpty() ? "" : "/";
+        result += String.format(";%d;%d", p.x, p.y);
+      }
+
+      if (boardFound) {
+        ACLMessage newMsg = new ACLMessage(ACLMessage.INFORM);
+        newMsg.addReceiver(boardAgent);
+        newMsg.setConversationId("draw");
+        newMsg.setContent(result);
+        send(newMsg);
+      }
+    }
+
   }
 
   private boolean AllAgentsDied() {

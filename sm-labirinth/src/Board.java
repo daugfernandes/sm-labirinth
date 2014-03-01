@@ -65,12 +65,20 @@ public class Board extends Agent {
                 _labirinth.Draw(g);
               } catch (UnreadableException ex) {
                 System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
-              } break;
+              }
+              break;
             case "draw":
               if (_labirinth != null) {
                 Graphics g = frame.getComponent(0).getGraphics();
                 _labirinth.Draw(g);
-              } break;
+                for (String agent : msg.getContent().split("/")) {
+                  String[] values = agent.split(";");
+                  g.setColor(Color.GREEN);
+                  g.fillOval(Integer.parseInt(values[1])*20, Integer.parseInt(values[2])*20, 15, 15);
+                }
+
+              }
+              break;
             case "end":
               doDelete();
               break;
@@ -108,10 +116,10 @@ public class Board extends Agent {
 
     JPanel panel = new JPanel();
     frame.add(panel);
-    panel.setBounds(50, 50, 300, 300);
+    panel.setBounds(50, 50, 400, 400);
     Container c = panel;
     c.setBackground(Color.GRAY);
-    Dimension d = new Dimension(400, 400);
+    Dimension d = new Dimension(500, 500);
     c.setPreferredSize(d);
     frame.pack();
     frame.setResizable(false);
