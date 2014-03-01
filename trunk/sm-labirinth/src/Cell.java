@@ -64,10 +64,18 @@ public class Cell implements java.io.Serializable {
   public int getX() {
     return _x;
   }
+  
+//  public void setX(int newX) {
+//      _x = newX;
+//  }
 
   public int getY() {
     return _y;
   }
+  
+//  public void setY(int newY) {
+//      _y = newY;
+//  }
 
   /**
    * Makes a next (forward) move

@@ -20,6 +20,8 @@ public class Labirinth implements java.io.Serializable {
 
   private Cell[][] _cells;
   private Cell _exit;
+  private int labWidth;
+  private int labHeight;
 
   public Labirinth() {
     // by default
@@ -83,11 +85,21 @@ public class Labirinth implements java.io.Serializable {
         }
       }
     }
+    labWidth = width;
+    labHeight = height;
   }
 
   public Labirinth(int width, int height, Cell exit) {
     _cells = new Cell[height][width];
     _exit = exit;
+  }
+  
+  public int getWidth() {
+      return labWidth;
+  }
+  
+  public int getHeight() {
+      return labHeight;
   }
 
   private String[] readTextFile(String fileName) throws FileNotFoundException, IOException {
@@ -110,6 +122,10 @@ public class Labirinth implements java.io.Serializable {
 
   public Cell getExit() {
     return _exit;
+  }
+  
+  public Cell getCell(int x, int y) {
+      return _cells[x][y];
   }
 
   public void Draw(Graphics graphics) {

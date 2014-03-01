@@ -101,7 +101,7 @@ public class Referee extends Agent {
 
                 } else {
 
-                  System.out.println(String.format("WRN %s: zeros or more than one board. #%d", getAID().getName(), result.length));
+//                  System.out.println(String.format("WRN %s: zeros or more than one board. #%d", getAID().getName(), result.length));
                 }
               }
             } catch (FIPAException ex) {
