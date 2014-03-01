@@ -101,6 +101,12 @@ public class Labirinth implements java.io.Serializable {
   public int getHeight() {
       return labHeight;
   }
+  
+  /*
+  public void setWasTried(int x, int y) {
+      this._cells[x][y]
+  }
+  */
 
   private String[] readTextFile(String fileName) throws FileNotFoundException, IOException {
 
