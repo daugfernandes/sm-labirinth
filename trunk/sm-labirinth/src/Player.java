@@ -16,6 +16,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import java.util.Random;
 import java.util.logging.Level;
@@ -26,6 +27,7 @@ import java.util.logging.Logger;
  * @author david
  */
 public class Player extends Agent {
+
   private static final long serialVersionUID = 9L;
 
   private Labirinth _labirinth;
@@ -81,7 +83,7 @@ public class Player extends Agent {
 
     // Adds the SB and ListenToOffers behaviours to the PB
     pb.addSubBehaviour(sb);
-    pb.addSubBehaviour(new ListenToOffers());
+    pb.addSubBehaviour(new ListenToMessages());
 
     // Adds the PB behaviour to the agent
     main.addSubBehaviour(pb);
@@ -165,7 +167,8 @@ public class Player extends Agent {
 
   // Searches for the exit
   private class SearchExit extends SimpleBehaviour {
-    private static final long serialVersionUID = 11L;
+
+    private static final long serialVersionUID = 2L;
 
     @Override
     public void action() {
@@ -173,7 +176,7 @@ public class Player extends Agent {
       if (labirinthReceived) {
         Cell currentPosition = _home;
         _path.push(currentPosition);
-        
+
         // Run until the exit is found
         do {
 
@@ -181,7 +184,7 @@ public class Player extends Agent {
 
           // If there is a possible move ...
           if (nextMove != null) {
-            
+
             // Set the move as tried
             nextMove.setWasTried(true);
 
@@ -215,7 +218,8 @@ public class Player extends Agent {
 
   // Informs that the exit of the labyrinth was found
   private class Conclusion extends SimpleBehaviour {
-    private static final long serialVersionUID = 12L;
+
+    private static final long serialVersionUID = 3L;
 
     @Override
     public void action() {
@@ -246,8 +250,9 @@ public class Player extends Agent {
   }
 
   // Listens to offers from other agents / the referee (yup)
-  private class ListenToOffers extends CyclicBehaviour {
-    private static final long serialVersionUID = 13L;
+  private class ListenToMessages extends CyclicBehaviour {
+
+    private static final long serialVersionUID = 4L;
 
     // e como é que um player comunica com árbitro?
     // não não
@@ -263,7 +268,14 @@ public class Player extends Agent {
     @Override
     public void action() {
 
+      ACLMessage msg = receive();
+      if (msg != null) {
+        if (msg.getConversationId().equals("looser")) {
+          System.out.println(String.format("LOG %s: Player is a looser.", getAID().getName()));
+          doDelete();
+        }
+      }
+      
     }
   }
-
 }
