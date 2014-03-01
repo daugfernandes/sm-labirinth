@@ -17,6 +17,7 @@ import java.io.IOException;
  * @author joaorodr84@gmail.com
  */
 public class Labirinth implements java.io.Serializable {
+  private static final long serialVersionUID = 7L;
 
   private Cell[][] _cells;
   private Cell _exit;

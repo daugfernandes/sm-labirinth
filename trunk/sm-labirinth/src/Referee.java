@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  */
 public class Referee extends Agent {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 15L;
 
   private Labirinth _labirinth;
   private HashMap<AID, Boolean> _players;

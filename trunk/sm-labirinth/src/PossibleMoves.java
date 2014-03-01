@@ -13,6 +13,7 @@ import java.util.List;
  * @author joaorodr84@gmail.com
  */
 public class PossibleMoves implements java.io.Serializable {
+  private static final long serialVersionUID = 14L;
 
   List<Move> _moves;
 

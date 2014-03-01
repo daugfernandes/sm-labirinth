@@ -11,7 +11,7 @@
  */
 public class Cell implements java.io.Serializable {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 6L;
 
   private int _x;
   private int _y;
