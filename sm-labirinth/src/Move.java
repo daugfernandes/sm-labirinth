@@ -10,6 +10,7 @@
  * @author joaorodr84@gmail.com
  */
 public class Move implements java.io.Serializable {
+  private static final long serialVersionUID = 8L;
 
   private Direction _direction;
   private boolean _wasTried;
@@ -41,15 +42,23 @@ public class Move implements java.io.Serializable {
   }
   
   public int getIncX() {
-      if (this._direction == Direction.East) return 1;
-      else if (this._direction == Direction.West) return -1;
-      else return 0;
+      if (this._direction == Direction.East) {
+        return 1;
+      } else if (this._direction == Direction.West) {
+        return -1;
+      } else {
+        return 0;
+      }
   }
   
   public int getIncY() {
-      if (this._direction == Direction.North) return -1;
-      else if (this._direction == Direction.South) return 1;
-      else return 0;
+      if (this._direction == Direction.North) {
+        return -1;
+      } else if (this._direction == Direction.South) {
+        return 1;
+      } else {
+        return 0;
+      }
   }
 
 }

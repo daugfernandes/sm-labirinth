@@ -26,10 +26,11 @@ import java.util.logging.Logger;
  * @author david
  */
 public class Player extends Agent {
+  private static final long serialVersionUID = 9L;
 
-  Labirinth _labirinth;
-  Stack<Cell> _path;        // J: acrescentei <Cell> para o programa saber que é uma stack de células
-  Cell _home;
+  private Labirinth _labirinth;
+  private Stack<Cell> _path;        // J: acrescentei <Cell> para o programa saber que é uma stack de células
+  private Cell _home;
   private AID refereeAgent;
   private boolean refereeFound;
   private boolean labirinthReceived;
@@ -59,7 +60,7 @@ public class Player extends Agent {
 
     //this._labirinth = labirinth;
     //this._home = home;
-    _path = new Stack<Cell>();
+    _path = new Stack<>();
     refereeFound = false;
 
     // Main sequential behaviour for Initialize and PB
@@ -76,7 +77,7 @@ public class Player extends Agent {
 
     // Adds the SearchExit and OfferExit behaviours to the sequential behaviour
     sb.addSubBehaviour(new SearchExit());
-    sb.addSubBehaviour(new OfferExit());
+    sb.addSubBehaviour(new Conclusion());
 
     // Adds the SB and ListenToOffers behaviours to the PB
     pb.addSubBehaviour(sb);
@@ -106,7 +107,7 @@ public class Player extends Agent {
   // Waits for the referee to transmit the labyrinth object and processes it
   private class Initialize extends SimpleBehaviour {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 10L;
     boolean finished = false;
 
     @Override
@@ -159,43 +160,28 @@ public class Player extends Agent {
     @Override
     public boolean done() {
       return finished;
-//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
   }
 
-//    @Override
-//    public void action() {
-//      ACLMessage msg = receive();
-//
-//      if (msg != null) {
-//        // Process the received message
-//        try {
-//          _labirinth = (Labirinth) msg.getContentObject();
-//        } catch (UnreadableException ex) {
-//          Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//      } else {
-//        block();
-//      }
-//    }
-//  }
-  // Searches for the exit if the labyrinth
+  // Searches for the exit
   private class SearchExit extends SimpleBehaviour {
+    private static final long serialVersionUID = 11L;
 
     @Override
     public void action() {
-//000
+
       if (labirinthReceived) {
         Cell currentPosition = _home;
         _path.push(currentPosition);
-        Move nextMove;
+        
         // Run until the exit is found
         do {
 
-          nextMove = currentPosition.getNextPossibleMove();
+          Move nextMove = currentPosition.getNextPossibleMove();
 
           // If there is a possible move ...
           if (nextMove != null) {
+            
             // Set the move as tried
             nextMove.setWasTried(true);
 
@@ -205,14 +191,9 @@ public class Player extends Agent {
             if (!currentPosition.getWasTried()) {
               // Keep the current position in the path
               _path.push(currentPosition);
-              //System.out.println(String.format("LOG %s: Moved forward (%s) to = %s", getAID().getName(), nextMove.getDirection().toString(), currentPosition.toString()));
             }
 
-          } // Do some backtracking
-          else {
-//            if(currentPosition.equals(_home)) {
-//              break;
-//            }
+          } else {
             // Make the backtrack move
             currentPosition = _path.pop();
             //System.out.println(String.format("LOG %s: Moved backward to = %s", getAID().getName(), currentPosition.toString()));
@@ -222,45 +203,39 @@ public class Player extends Agent {
           }
         } while (!ExitFound());
 
-        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-        msg.addReceiver(refereeAgent);
-        msg.setLanguage("jr");
-        msg.setOntology("labirinth-ontology");
-
-        if (ExitFound()) {
-          System.out.println(String.format("LOG %s: Exit found!", getAID().getName()));
-          msg.setConversationId("found");
-          send(msg);
-        } else {
-          System.out.println(String.format("LOG %s: Player can't find exit!", getAID().getName()));
-          msg.setConversationId("giveup");
-          send(msg);
-        }
-
-        doDelete();
-//000
       }
     }
 
     @Override
     public boolean done() {
-      // todo
       return true || ExitFound();
     }
 
   }
 
   // Informs that the exit of the labyrinth was found
-  private class OfferExit extends SimpleBehaviour {
-    // ...
+  private class Conclusion extends SimpleBehaviour {
+    private static final long serialVersionUID = 12L;
 
     @Override
     public void action() {
-//      String msgToSend = "EXITFOUND";
-//      ACLMessage exitFound = new ACLMessage(ACLMessage.INFORM);
-//      exitFound.addReceiver(new AID("referee", AID.ISLOCALNAME));
-//      exitFound.setContent(msgToSend);
-//      send(exitFound);
+
+      ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+      msg.addReceiver(refereeAgent);
+      msg.setLanguage("jr");
+      msg.setOntology("labirinth-ontology");
+
+      if (ExitFound()) {
+        System.out.println(String.format("LOG %s: Exit found!", getAID().getName()));
+        msg.setConversationId("found");
+        send(msg);
+      } else {
+        System.out.println(String.format("LOG %s: Player can't find exit!", getAID().getName()));
+        msg.setConversationId("giveup");
+        send(msg);
+      }
+
+      doDelete();
     }
 
     @Override
@@ -272,6 +247,7 @@ public class Player extends Agent {
 
   // Listens to offers from other agents / the referee (yup)
   private class ListenToOffers extends CyclicBehaviour {
+    private static final long serialVersionUID = 13L;
 
     // e como é que um player comunica com árbitro?
     // não não
@@ -286,21 +262,7 @@ public class Player extends Agent {
     // suponho que sim
     @Override
     public void action() {
-//      ACLMessage msg = receive();
-//
-//      if (msg != null) {
-//        String msgExpected = "EXITFOUND";
-//
-//        // Process the received message
-//        String msgReceived = msg.getContent();
-//
-//        // Check the received message
-//        if (msgReceived.equals(msgExpected)) {
-//          // Terminate agent
-//        }
-//      } else {
-//        block();
-//      }
+
     }
   }
 
