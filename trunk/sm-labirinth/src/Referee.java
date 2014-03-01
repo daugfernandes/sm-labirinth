@@ -70,7 +70,7 @@ public class Referee extends jade.core.Agent {
           System.out.println(String.format("ERR %s: %s.", getAID().getName(), fe.getMessage()));
         }
 
-        // setup a cyclic behaviour to listen to players
+        // Setup a cyclic behaviour to listen to players
         addBehaviour(new CyclicBehaviour() {
           private static final long serialVersionUID = 1L;
 

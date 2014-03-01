@@ -41,58 +41,9 @@ public class Player extends jade.core.Agent {
     //this._home = home;
     //_path = new Stack<Cell>();
     refereeFound = false;
-    // search for a referee
-
-    addBehaviour(new CyclicBehaviour() {
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void action() {
-        try {
-          if (!refereeFound) {
-            DFAgentDescription template = new DFAgentDescription();
-            ServiceDescription sd = new ServiceDescription();
-            sd.setType("labirinth_referee");
-            template.addServices(sd);
-            DFAgentDescription[] result = DFService.search(myAgent, template);
-            if (result.length == 1) {
-              refereeAgent = result[0].getName();
-              refereeFound = true;
-              System.out.println(String.format("LOG %s: referee found AID: %s", getAID().getName(), refereeAgent.getName()));
-              ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-              msg.addReceiver(refereeAgent);
-              msg.setLanguage("jr");
-              msg.setOntology("labirinth-ontology");
-              msg.setContent("tungas");
-              send(msg);
-
-            } else {
-
-              System.out.println(String.format("WRN %s: zeros or more than one referee. #%d", getAID().getName(), result.length));
-            }
-          } else {
-            ACLMessage msg = receive();
-            if (msg != null) {
-              try {
-                Object obj = msg.getContentObject();
-                if (obj instanceof Labirinth) {
-                  _labirinth = (Labirinth) obj;
-                  System.out.println(String.format("LOG %s: Labirinth received Exit = %s", getAID().getName(), _labirinth.getExit().toString()));
-                }
-              } catch (UnreadableException ex) {
-                Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
-              }
-
-            }
-          }
-        } catch (FIPAException ex) {
-          System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
-        }
-      }
-    });
-
-    // Creates an initial sequential behaviour for GetLab and PB
-    SequentialBehaviour isb = new SequentialBehaviour();
+    
+    // Adds the bhaviour that searches for a referee and loads the labirinth
+    addBehaviour(new Initialize());
 
     // Creates new parallel behaviour for concurrency
     ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ANY);
@@ -108,12 +59,8 @@ public class Player extends jade.core.Agent {
     pb.addSubBehaviour(sb);
     pb.addSubBehaviour(new ListenToOffers());
 
-    // Adds the GetLab and PB behaviour to ISB
-    isb.addSubBehaviour(new GetLab());
-    isb.addSubBehaviour(pb);
-
-    // Adds the PB to the agent
-    this.addBehaviour(pb);
+    // Adds the PB behaviour to the agent
+    addBehaviour(pb);
   }
 
   @Override
@@ -131,10 +78,55 @@ public class Player extends jade.core.Agent {
   }
 
   // Waits for the referee to transmit the labyrinth object and processes it
-  private class GetLab extends CyclicBehaviour {
+  private class Initialize extends CyclicBehaviour {
+      
+      private static final long serialVersionUID = 1L;
 
-    @Override
-    public void action() {
+      @Override
+      public void action() {
+        try {
+            if (!refereeFound) {
+                DFAgentDescription template = new DFAgentDescription();
+                ServiceDescription sd = new ServiceDescription();
+                sd.setType("labirinth_referee");
+                template.addServices(sd);
+                DFAgentDescription[] result = DFService.search(myAgent, template);
+                if (result.length == 1) {
+                    refereeAgent = result[0].getName();
+                    refereeFound = true;
+                    System.out.println(String.format("LOG %s: referee found AID: %s", getAID().getName(), refereeAgent.getName()));
+                    ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+                    msg.addReceiver(refereeAgent);
+                    msg.setLanguage("jr");
+                    msg.setOntology("labirinth-ontology");
+                    msg.setContent("tungas");
+                    send(msg);
+                } else {
+                    System.out.println(String.format("WRN %s: zeros or more than one referee. #%d", getAID().getName(), result.length));
+                }
+            } else {
+                ACLMessage msg = receive();
+                if (msg != null) {
+                    try {
+                        Object obj = msg.getContentObject();
+                        if (obj instanceof Labirinth) {
+                            _labirinth = (Labirinth) obj;
+                            System.out.println(String.format("LOG %s: Labirinth received Exit = %s", getAID().getName(), _labirinth.getExit().toString()));
+                        }
+                    } catch (UnreadableException ex) {
+                            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        } catch (FIPAException ex) {
+            System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
+        }
+    }
+}
+      
+      
+//    @Override
+//    public void action() {
 //      ACLMessage msg = receive();
 //
 //      if (msg != null) {
@@ -147,42 +139,44 @@ public class Player extends jade.core.Agent {
 //      } else {
 //        block();
 //      }
-    }
-  }
+//    }
+//  }
 
   // Searches for the exit if the labyrinth
   private class SearchExit extends SimpleBehaviour {
 
     @Override
     public void action() {
-//      Cell currentPosition = _home;
-//
-//      // Run until the exit is found
-//      while (!ExitFound()) {
-//        Move nextMove = currentPosition.getNextPossibleMove();
-//
-//        // If there is a possible move ...
-//        if (nextMove != null) {
-//          // Set the move as tried
-//          currentPosition.getNextPossibleMove().setWasTried(true);
-//
-//          // Keep the current position in the path
-//          _path.push(currentPosition);
-//
-//          // Make a move
-//          currentPosition.makeNextMove();
-//        } // Do some backtracking
-//        else {
-//          // While the next move is a tried cell ...
-//          while (_path.peek().getNextPossibleMove().getWasTried()) {
-//            // Pop the cell from backtracking
-//            Cell backCell = _path.pop();
-//
-//            // Make the backtrack move
-//            currentPosition.moveTo(backCell);
-//          }
-//        }
-//      }
+/*      Cell currentPosition = _home;
+
+      // Run until the exit is found
+      while (!ExitFound()) {
+        Move nextMove = currentPosition.getNextPossibleMove();
+
+        // If there is a possible move ...
+        if (nextMove != null) {
+          // Set the move as tried
+          currentPosition.getNextPossibleMove().setWasTried(true);
+
+          // Keep the current position in the path
+          _path.push(currentPosition);
+
+          // Make a move
+          currentPosition.makeNextMove();
+        } // Do some backtracking
+        else {
+          // While the next move is a tried cell ...
+          while (_path.peek().getNextPossibleMove().getWasTried()) {
+            // Pop the cell from backtracking
+            Cell backCell = _path.pop();
+
+            // Make the backtrack move
+            currentPosition.moveTo(backCell);
+          }
+        }
+      }
+      System.out.println(String.format("LOG %s: Exit found!", getAID().getName()));
+*/
     }
 
     @Override
@@ -190,6 +184,7 @@ public class Player extends jade.core.Agent {
       // todo
       return true || ExitFound();
     }
+
   }
 
   // Informs that the exit of the labyrinth was found
