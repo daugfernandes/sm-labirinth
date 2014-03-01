@@ -40,7 +40,7 @@ public class Labirinth implements java.io.Serializable {
       width = Math.max(width, row.length());
       exitX = row.indexOf("#");
       if (exitX >= 0) {
-        _exit = new Cell(exitX, height - 1, true);
+        _exit = new Cell(height - 1, exitX, true);
       }
     }
     _cells = new Cell[height][width];
@@ -130,8 +130,8 @@ public class Labirinth implements java.io.Serializable {
     return _exit;
   }
   
-  public Cell getCell(int x, int y) {
-      return _cells[x][y];
+  public Cell getCell(int y, int x) {
+      return _cells[y][x];
   }
 
   public void Draw(Graphics graphics) {
