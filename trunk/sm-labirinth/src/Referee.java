@@ -7,16 +7,14 @@
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.ReceiverBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.UnreadableException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,8 +28,7 @@ public class Referee extends Agent {
   private static final long serialVersionUID = 1L;
 
   private Labirinth _labirinth;
-  private List<Player> _agents;
-  private List<AID> _players;
+  private HashMap<AID, Boolean> _players;
   private boolean boardFound = false;
   private AID boardAgent;
 
@@ -53,7 +50,7 @@ public class Referee extends Agent {
     Object[] args = getArguments();
     System.out.println(String.format("LOG %s: Args.size=%d [0]==%s", getAID().getName(), args.length, args[0]));
 
-    _players = new ArrayList<>();
+    _players = new HashMap<>();
 
     if (args.length > 0) {
       try {
@@ -121,14 +118,30 @@ public class Referee extends Agent {
             ACLMessage msg = receive();
             if (msg != null) {
               try {
-                String title = msg.getContent();
-                System.out.println(String.format("LOG %s: Message received from %s is {%s}", getAID().getName(), msg.getSender().getName(), title));
-                if (!_players.contains(msg.getSender())) {
-                  _players.add(msg.getSender());
-                  ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
-                  reply.addReceiver(msg.getSender());
-                  reply.setContentObject(_labirinth);
-                  myAgent.send(reply);
+                if (msg.getConversationId().equals("alive")) {
+
+                  String title = msg.getContent();
+                  System.out.println(String.format("LOG %s: Message received from %s is {%s}", getAID().getName(), msg.getSender().getName(), title));
+                  if (!_players.containsKey(msg.getSender())) {
+                    _players.put(msg.getSender(), false);
+                    ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
+                    reply.addReceiver(msg.getSender());
+                    reply.setContentObject(_labirinth);
+                    myAgent.send(reply);
+                  }
+                } else if (msg.getConversationId().equals("found")) {
+                  _players.put(msg.getSender(), true);
+                  if (AllAgentsDied()) {
+                    TerminateBoard();
+                    doDelete();
+                  }
+
+                } else if (msg.getConversationId().equals("giveup")) {
+                  _players.put(msg.getSender(), true);
+                  if (AllAgentsDied()) {
+                    TerminateBoard();
+                    doDelete();
+                  }
                 }
 
               } catch (IOException ex) {
@@ -148,6 +161,15 @@ public class Referee extends Agent {
     }
   }
 
+  private boolean AllAgentsDied() {
+    for (Map.Entry<AID, Boolean> item : _players.entrySet()) {
+      if (!item.getValue()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @Override
   protected void takeDown() {
     // deregister
@@ -159,4 +181,12 @@ public class Referee extends Agent {
     System.out.println(String.format("LOG %s: Referee is terminating!", getAID().getName()));
   }
 
+  private void TerminateBoard() {
+    ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+    msg.addReceiver(boardAgent);
+    msg.setLanguage("jr");
+    msg.setOntology("labirinth-ontology");
+    msg.setConversationId("end");
+    send(msg);
+  }
 }

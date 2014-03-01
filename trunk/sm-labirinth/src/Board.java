@@ -57,22 +57,23 @@ public class Board extends Agent {
         ACLMessage msg = receive();
         if (msg != null) {
           String conversationId = msg.getConversationId();
-
-          if (conversationId.equals("lab")) {
-            try {
-              _labirinth = (Labirinth) msg.getContentObject();
-              Graphics g = frame.getGraphics();
-              _labirinth.Draw(g);
-            } catch (UnreadableException ex) {
-              System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
-            }
-          }
-
-          if (conversationId.equals("draw")) {
-            if (_labirinth != null) {
-              Graphics g = frame.getComponent(0).getGraphics();
-              _labirinth.Draw(g);
-            }
+          switch (conversationId) {
+            case "lab":
+              try {
+                _labirinth = (Labirinth) msg.getContentObject();
+                Graphics g = frame.getGraphics();
+                _labirinth.Draw(g);
+              } catch (UnreadableException ex) {
+                System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
+              } break;
+            case "draw":
+              if (_labirinth != null) {
+                Graphics g = frame.getComponent(0).getGraphics();
+                _labirinth.Draw(g);
+              } break;
+            case "end":
+              doDelete();
+              break;
           }
 
         }
@@ -104,10 +105,10 @@ public class Board extends Agent {
 
     frame = new JFrame("Labirinth board");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    
+
     JPanel panel = new JPanel();
     frame.add(panel);
-    panel.setBounds(50,50,300,300);
+    panel.setBounds(50, 50, 300, 300);
     Container c = panel;
     c.setBackground(Color.GRAY);
     Dimension d = new Dimension(400, 400);

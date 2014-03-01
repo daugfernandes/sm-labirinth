@@ -10,18 +10,20 @@
  * @author joaorodr84@gmail.com
  */
 public class Cell implements java.io.Serializable {
+
   private static final long serialVersionUID = 1L;
 
   private int _x;
   private int _y;
   private boolean _isWall;
   private PossibleMoves _possibleMoves;
+  private boolean _wasTried;
 
   public Cell() {
     this(-1, -1, true);
   }
 
-  public Cell(int x, int y, boolean isWall) {
+  public Cell(int y, int x, boolean isWall) {
     this._x = x;
     this._y = y;
     this._possibleMoves = new PossibleMoves();
@@ -43,6 +45,14 @@ public class Cell implements java.io.Serializable {
 
   public PossibleMoves getPossibleMoves() {
     return _possibleMoves;
+  }
+
+  public boolean getWasTried() {
+    return _wasTried;
+  }
+
+  public void setWasTried() {
+    _wasTried = true;
   }
 
   public void SetIsWall() {
@@ -71,7 +81,7 @@ public class Cell implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return String.format("Cell @(%d,%d)", this._x, this._y);
+    return String.format("Cell @(%d,%d)", this._y, this._x);
   }
 
 }

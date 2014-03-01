@@ -33,22 +33,23 @@ public class Player extends Agent {
   private AID refereeAgent;
   private boolean refereeFound;
   private boolean labirinthReceived;
-  
+
   public Cell generateHome() {
-      if (labirinthReceived) {
-          Random randomGenerator = new Random();
-          
-          Cell initPos;
-          do {
-            int homeX = randomGenerator.nextInt(_labirinth.getWidth()),
+    if (labirinthReceived) {
+      Random randomGenerator = new Random();
+
+      Cell initPos;
+      do {
+        int homeX = randomGenerator.nextInt(_labirinth.getWidth()),
                 homeY = randomGenerator.nextInt(_labirinth.getHeight());
-            
-            initPos = _labirinth.getCell(homeX, homeY);
-          } while (initPos.equals(_labirinth.getExit()) || initPos.IsWall());
-          
-          return initPos;
-      }
-      else return null;
+
+        initPos = _labirinth.getCell(homeY, homeX);
+      } while (initPos.equals(_labirinth.getExit()) || initPos.IsWall());
+
+      return initPos;
+    } else {
+      return null;
+    }
   }
 
   @Override
@@ -60,10 +61,10 @@ public class Player extends Agent {
     //this._home = home;
     _path = new Stack<Cell>();
     refereeFound = false;
-    
+
     // Main sequential behaviour for Initialize and PB
     SequentialBehaviour main = new SequentialBehaviour();
-    
+
     // Adds the bhaviour that searches for a referee and loads the labirinth
     main.addSubBehaviour(new Initialize());
 
@@ -83,7 +84,7 @@ public class Player extends Agent {
 
     // Adds the PB behaviour to the agent
     main.addSubBehaviour(pb);
-    
+
     // Adds the main behaviour to the agent
     addBehaviour(main);
   }
@@ -94,7 +95,7 @@ public class Player extends Agent {
   }
 
   public boolean ExitFound() {
-    return _path.peek().equals(_labirinth.getExit());
+    return _path.size() != 0 && (_path.peek().getX() == _labirinth.getExit().getX() && _path.peek().getY() == _labirinth.getExit().getY());
   }
 
   public Cell Move() {
@@ -104,65 +105,64 @@ public class Player extends Agent {
 
   // Waits for the referee to transmit the labyrinth object and processes it
   private class Initialize extends SimpleBehaviour {
-      
-      private static final long serialVersionUID = 1L;
-      boolean finished=false;
 
-      @Override
-      public void action() {
-        while (!finished) {
-            try {
-                if (!refereeFound) {
-                    DFAgentDescription template = new DFAgentDescription();
-                    ServiceDescription sd = new ServiceDescription();
-                    sd.setType("labirinth_referee");
-                    template.addServices(sd);
-                    DFAgentDescription[] result = DFService.search(myAgent, template);
-                    if (result.length == 1) {
-                        refereeAgent = result[0].getName();
-                        refereeFound = true;
-                        System.out.println(String.format("LOG %s: referee found AID: %s", getAID().getName(), refereeAgent.getName()));
-                        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-                        msg.addReceiver(refereeAgent);
-                        msg.setLanguage("jr");
-                        msg.setOntology("labirinth-ontology");
-                        msg.setContent("tungas");
-                        send(msg);
-                    } else {
-                        System.out.println(String.format("WRN %s: zeros or more than one referee. #%d", getAID().getName(), result.length));
-                    }
-                } else {
-                    ACLMessage msg = receive();
-                    if (msg != null) {
-                        try {
-                            Object obj = msg.getContentObject();
-                            if (obj instanceof Labirinth) {
-                                _labirinth = (Labirinth) obj;
-                                System.out.println(String.format("LOG %s: Labirinth received Exit = %s", getAID().getName(), _labirinth.getExit().toString()));
-                                labirinthReceived = true;
-                                _home = generateHome();
-                                System.out.println(String.format("LOG %s: Home = %s", getAID().getName(),_home.toString()));
-                            }
-                        } catch (UnreadableException ex) {
-                                Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }
-            finished = refereeFound && labirinthReceived;
-            } catch (FIPAException ex) {
-                System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
+    private static final long serialVersionUID = 1L;
+    boolean finished = false;
+
+    @Override
+    public void action() {
+      while (!finished) {
+        try {
+          if (!refereeFound) {
+            DFAgentDescription template = new DFAgentDescription();
+            ServiceDescription sd = new ServiceDescription();
+            sd.setType("labirinth_referee");
+            template.addServices(sd);
+            DFAgentDescription[] result = DFService.search(myAgent, template);
+            if (result.length == 1) {
+              refereeAgent = result[0].getName();
+              refereeFound = true;
+              System.out.println(String.format("LOG %s: referee found AID: %s", getAID().getName(), refereeAgent.getName()));
+              ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+              msg.addReceiver(refereeAgent);
+              msg.setLanguage("jr");
+              msg.setOntology("labirinth-ontology");
+              msg.setConversationId("alive");
+              send(msg);
+            } else {
+              System.out.println(String.format("WRN %s: zeros or more than one referee. #%d", getAID().getName(), result.length));
             }
+          } else {
+            ACLMessage msg = receive();
+            if (msg != null) {
+              try {
+                Object obj = msg.getContentObject();
+                if (obj instanceof Labirinth) {
+                  _labirinth = (Labirinth) obj;
+                  System.out.println(String.format("LOG %s: Labirinth received Exit = %s", getAID().getName(), _labirinth.getExit().toString()));
+                  labirinthReceived = true;
+                  _home = generateHome();
+                  System.out.println(String.format("LOG %s: Home = %s", getAID().getName(), _home.toString()));
+                }
+              } catch (UnreadableException ex) {
+                Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+              }
+            }
+          }
+          finished = refereeFound && labirinthReceived;
+        } catch (FIPAException ex) {
+          System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
         }
+      }
     }
 
-        @Override
-        public boolean done() {
-            return finished;
+    @Override
+    public boolean done() {
+      return finished;
 //            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
     }
-      
-      
+  }
+
 //    @Override
 //    public void action() {
 //      ACLMessage msg = receive();
@@ -179,41 +179,65 @@ public class Player extends Agent {
 //      }
 //    }
 //  }
-
   // Searches for the exit if the labyrinth
   private class SearchExit extends SimpleBehaviour {
 
     @Override
     public void action() {
 //000
-     if (labirinthReceived) {
+      if (labirinthReceived) {
         Cell currentPosition = _home;
-
+        _path.push(currentPosition);
+        Move nextMove;
         // Run until the exit is found
         do {
-          Move nextMove = currentPosition.getNextPossibleMove();
+
+          nextMove = currentPosition.getNextPossibleMove();
 
           // If there is a possible move ...
           if (nextMove != null) {
             // Set the move as tried
             nextMove.setWasTried(true);
 
-            // Keep the current position in the path
-            _path.push(currentPosition);
-
             // Make a move
-            currentPosition = _labirinth.getCell(currentPosition.getX() + nextMove.getIncX(), currentPosition.getY() + nextMove.getIncY());
-            System.out.println(String.format("LOG %s: Moved FRONT to = %s", getAID().getName(),currentPosition.toString()));
-            
+            currentPosition = _labirinth.getCell(currentPosition.getY() + nextMove.getIncY(), currentPosition.getX() + nextMove.getIncX());
+
+            if (!currentPosition.getWasTried()) {
+              // Keep the current position in the path
+              _path.push(currentPosition);
+              //System.out.println(String.format("LOG %s: Moved forward (%s) to = %s", getAID().getName(), nextMove.getDirection().toString(), currentPosition.toString()));
+            }
+
           } // Do some backtracking
           else {
+//            if(currentPosition.equals(_home)) {
+//              break;
+//            }
             // Make the backtrack move
             currentPosition = _path.pop();
-            System.out.println(String.format("LOG %s: Moved BACK to = %s", getAID().getName(),currentPosition.toString()));
-         }
-//          System.out.println(String.format("LOG %s: Moved to = %s", getAID().getName(),currentPosition.toString()));
+            //System.out.println(String.format("LOG %s: Moved backward to = %s", getAID().getName(), currentPosition.toString()));
+            if (_path.size() == 0) {
+              break;
+            }
+          }
         } while (!ExitFound());
-        System.out.println(String.format("LOG %s: Exit found!", getAID().getName()));
+
+        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+        msg.addReceiver(refereeAgent);
+        msg.setLanguage("jr");
+        msg.setOntology("labirinth-ontology");
+
+        if (ExitFound()) {
+          System.out.println(String.format("LOG %s: Exit found!", getAID().getName()));
+          msg.setConversationId("found");
+          send(msg);
+        } else {
+          System.out.println(String.format("LOG %s: Player can't find exit!", getAID().getName()));
+          msg.setConversationId("giveup");
+          send(msg);
+        }
+
+        doDelete();
 //000
       }
     }
