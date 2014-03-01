@@ -17,6 +17,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +33,23 @@ public class Player extends Agent {
   private AID refereeAgent;
   private boolean refereeFound;
   private boolean labirinthReceived;
+  
+  public Cell generateHome() {
+      if (labirinthReceived) {
+          Random randomGenerator = new Random();
+          
+          Cell initPos;
+          do {
+            int homeX = randomGenerator.nextInt(_labirinth.getWidth()),
+                homeY = randomGenerator.nextInt(_labirinth.getHeight());
+            
+            initPos = _labirinth.getCell(homeX, homeY);
+          } while (initPos == _labirinth.getExit() || initPos.IsWall());
+          
+          return initPos;
+      }
+      else return null;
+  }
 
   @Override
   protected void setup() {
@@ -43,8 +61,11 @@ public class Player extends Agent {
     //_path = new Stack<Cell>();
     refereeFound = false;
     
+    // Main sequential behaviour for Initialize and PB
+    SequentialBehaviour main = new SequentialBehaviour();
+    
     // Adds the bhaviour that searches for a referee and loads the labirinth
-    addBehaviour(new Initialize());
+    main.addSubBehaviour(new Initialize());
 
     // Creates new parallel behaviour for concurrency
     ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ANY);
@@ -61,7 +82,10 @@ public class Player extends Agent {
     pb.addSubBehaviour(new ListenToOffers());
 
     // Adds the PB behaviour to the agent
-    addBehaviour(pb);
+    main.addSubBehaviour(pb);
+    
+    // Adds the main behaviour to the agent
+    addBehaviour(main);
   }
 
   @Override
@@ -82,6 +106,7 @@ public class Player extends Agent {
   private class Initialize extends CyclicBehaviour {
       
       private static final long serialVersionUID = 1L;
+      boolean finished;
 
       @Override
       public void action() {
@@ -113,12 +138,16 @@ public class Player extends Agent {
                         if (obj instanceof Labirinth) {
                             _labirinth = (Labirinth) obj;
                             System.out.println(String.format("LOG %s: Labirinth received Exit = %s", getAID().getName(), _labirinth.getExit().toString()));
+                            labirinthReceived = true;
+                            _home = generateHome();
+                            System.out.println(String.format("LOG %s: Home = %s", getAID().getName(),_home.toString()));
                         }
                     } catch (UnreadableException ex) {
                             Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
+        finished = true;
         } catch (FIPAException ex) {
             System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
         }
@@ -148,36 +177,40 @@ public class Player extends Agent {
 
     @Override
     public void action() {
-/*      Cell currentPosition = _home;
+//000
+     if (labirinthReceived) {
+        Cell currentPosition = _home;
 
-      // Run until the exit is found
-      while (!ExitFound()) {
-        Move nextMove = currentPosition.getNextPossibleMove();
+        // Run until the exit is found
+        do {
+          Move nextMove = currentPosition.getNextPossibleMove();
 
-        // If there is a possible move ...
-        if (nextMove != null) {
-          // Set the move as tried
-          currentPosition.getNextPossibleMove().setWasTried(true);
+          // If there is a possible move ...
+          if (nextMove != null) {
+            // Set the move as tried
+            currentPosition.getNextPossibleMove().setWasTried(true);
 
-          // Keep the current position in the path
-          _path.push(currentPosition);
+            // Keep the current position in the path
+            _path.push(currentPosition);
 
-          // Make a move
-          currentPosition.makeNextMove();
-        } // Do some backtracking
-        else {
-          // While the next move is a tried cell ...
-          while (_path.peek().getNextPossibleMove().getWasTried()) {
-            // Pop the cell from backtracking
-            Cell backCell = _path.pop();
+            // Make a move
+            currentPosition.makeNextMove();
+          } // Do some backtracking
+          else {
+            // While the next move is a tried cell ...
+            while (_path.peek().getNextPossibleMove().getWasTried()) {
+              // Pop the cell from backtracking
+              Cell backCell = _path.pop();
 
-            // Make the backtrack move
-            currentPosition.moveTo(backCell);
+              // Make the backtrack move
+              currentPosition.moveTo(backCell);
+            }
           }
-        }
+          System.out.println(String.format("LOG %s: Moved to = %s", getAID().getName(),currentPosition.toString()));
+        } while (!ExitFound());
+        System.out.println(String.format("LOG %s: Exit found!", getAID().getName()));
+//000
       }
-      System.out.println(String.format("LOG %s: Exit found!", getAID().getName()));
-*/
     }
 
     @Override
