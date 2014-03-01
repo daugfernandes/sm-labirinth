@@ -57,7 +57,7 @@ public class Referee extends Agent {
         _labirinth = new Labirinth((String) args[0]);
         System.out.println(String.format("LOG %s: Labirinth loaded; exit is " + _labirinth.getExit().toString(), getAID().getName()));
 
-        // registering the referee service
+        // registering the referee service in the yellow-pages
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
@@ -95,11 +95,7 @@ public class Referee extends Agent {
                   msg.setOntology("labirinth-ontology");
                   msg.setContentObject(_labirinth);
                   send(msg);
-
-                } else {
-
-//                  System.out.println(String.format("WRN %s: zeros or more than one board. #%d", getAID().getName(), result.length));
-                }
+                } 
               }
             } catch (FIPAException ex) {
               System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
@@ -131,11 +127,17 @@ public class Referee extends Agent {
                   }
                 } else if (msg.getConversationId().equals("found")) {
                   _players.put(msg.getSender(), true);
-                  if (AllAgentsDied()) {
+                  // game over!
+                  for (AID player : _players.keySet()) {
+                    if (!player.getName().equals(msg.getSender().getName())) {
+                      ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
+                      reply.addReceiver(msg.getSender());
+                      reply.setConversationId("looser");
+                      myAgent.send(reply);
+                    }
                     TerminateBoard();
                     doDelete();
                   }
-
                 } else if (msg.getConversationId().equals("giveup")) {
                   _players.put(msg.getSender(), true);
                   if (AllAgentsDied()) {
@@ -143,11 +145,9 @@ public class Referee extends Agent {
                     doDelete();
                   }
                 }
-
               } catch (IOException ex) {
                 Logger.getLogger(Referee.class.getName()).log(Level.SEVERE, null, ex);
               }
-
             }
           }
         });
