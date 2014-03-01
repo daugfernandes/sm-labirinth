@@ -64,45 +64,9 @@ public class Cell implements java.io.Serializable {
   public int getX() {
     return _x;
   }
-  
-//  public void setX(int newX) {
-//      _x = newX;
-//  }
 
   public int getY() {
     return _y;
-  }
-  
-//  public void setY(int newY) {
-//      _y = newY;
-//  }
-
-  /**
-   * Makes a next (forward) move
-   */
-  public void makeNextMove() {
-
-    Move nextMove = this.getNextPossibleMove();
-    Direction dir = nextMove.getDirection();
-    if (dir == Direction.North) {
-      this._y++;
-    } else if (dir == Direction.South) {
-      this._y--;
-    } else if (dir == Direction.West) {
-      this._x--;
-    } else if (dir == Direction.East) {
-      this._x++;
-    }
-  }
-
-  /**
-   * Moves to an other cell (used in backtracking)
-   *
-   * @param other
-   */
-  public void moveTo(Cell other) {
-    this._x = other._x;
-    this._y = other._y;
   }
 
   @Override

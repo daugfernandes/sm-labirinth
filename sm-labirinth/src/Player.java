@@ -44,7 +44,7 @@ public class Player extends Agent {
                 homeY = randomGenerator.nextInt(_labirinth.getHeight());
             
             initPos = _labirinth.getCell(homeX, homeY);
-          } while (initPos == _labirinth.getExit() || initPos.IsWall());
+          } while (initPos.equals(_labirinth.getExit()) || initPos.IsWall());
           
           return initPos;
       }
@@ -58,7 +58,7 @@ public class Player extends Agent {
 
     //this._labirinth = labirinth;
     //this._home = home;
-    //_path = new Stack<Cell>();
+    _path = new Stack<Cell>();
     refereeFound = false;
     
     // Main sequential behaviour for Initialize and PB
@@ -103,56 +103,64 @@ public class Player extends Agent {
   }
 
   // Waits for the referee to transmit the labyrinth object and processes it
-  private class Initialize extends CyclicBehaviour {
+  private class Initialize extends SimpleBehaviour {
       
       private static final long serialVersionUID = 1L;
-      boolean finished;
+      boolean finished=false;
 
       @Override
       public void action() {
-        try {
-            if (!refereeFound) {
-                DFAgentDescription template = new DFAgentDescription();
-                ServiceDescription sd = new ServiceDescription();
-                sd.setType("labirinth_referee");
-                template.addServices(sd);
-                DFAgentDescription[] result = DFService.search(myAgent, template);
-                if (result.length == 1) {
-                    refereeAgent = result[0].getName();
-                    refereeFound = true;
-                    System.out.println(String.format("LOG %s: referee found AID: %s", getAID().getName(), refereeAgent.getName()));
-                    ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-                    msg.addReceiver(refereeAgent);
-                    msg.setLanguage("jr");
-                    msg.setOntology("labirinth-ontology");
-                    msg.setContent("tungas");
-                    send(msg);
+        while (!finished) {
+            try {
+                if (!refereeFound) {
+                    DFAgentDescription template = new DFAgentDescription();
+                    ServiceDescription sd = new ServiceDescription();
+                    sd.setType("labirinth_referee");
+                    template.addServices(sd);
+                    DFAgentDescription[] result = DFService.search(myAgent, template);
+                    if (result.length == 1) {
+                        refereeAgent = result[0].getName();
+                        refereeFound = true;
+                        System.out.println(String.format("LOG %s: referee found AID: %s", getAID().getName(), refereeAgent.getName()));
+                        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+                        msg.addReceiver(refereeAgent);
+                        msg.setLanguage("jr");
+                        msg.setOntology("labirinth-ontology");
+                        msg.setContent("tungas");
+                        send(msg);
+                    } else {
+                        System.out.println(String.format("WRN %s: zeros or more than one referee. #%d", getAID().getName(), result.length));
+                    }
                 } else {
-                    System.out.println(String.format("WRN %s: zeros or more than one referee. #%d", getAID().getName(), result.length));
-                }
-            } else {
-                ACLMessage msg = receive();
-                if (msg != null) {
-                    try {
-                        Object obj = msg.getContentObject();
-                        if (obj instanceof Labirinth) {
-                            _labirinth = (Labirinth) obj;
-                            System.out.println(String.format("LOG %s: Labirinth received Exit = %s", getAID().getName(), _labirinth.getExit().toString()));
-                            labirinthReceived = true;
-                            _home = generateHome();
-                            System.out.println(String.format("LOG %s: Home = %s", getAID().getName(),_home.toString()));
+                    ACLMessage msg = receive();
+                    if (msg != null) {
+                        try {
+                            Object obj = msg.getContentObject();
+                            if (obj instanceof Labirinth) {
+                                _labirinth = (Labirinth) obj;
+                                System.out.println(String.format("LOG %s: Labirinth received Exit = %s", getAID().getName(), _labirinth.getExit().toString()));
+                                labirinthReceived = true;
+                                _home = generateHome();
+                                System.out.println(String.format("LOG %s: Home = %s", getAID().getName(),_home.toString()));
+                            }
+                        } catch (UnreadableException ex) {
+                                Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    } catch (UnreadableException ex) {
-                            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+            finished = refereeFound && labirinthReceived;
+            } catch (FIPAException ex) {
+                System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
             }
-        finished = true;
-        } catch (FIPAException ex) {
-            System.out.println(String.format("ERR %s: %s", getAID().getName(), ex.getMessage()));
         }
     }
-}
+
+        @Override
+        public boolean done() {
+            return finished;
+//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
       
       
 //    @Override
@@ -188,25 +196,22 @@ public class Player extends Agent {
           // If there is a possible move ...
           if (nextMove != null) {
             // Set the move as tried
-            currentPosition.getNextPossibleMove().setWasTried(true);
+            nextMove.setWasTried(true);
 
             // Keep the current position in the path
             _path.push(currentPosition);
 
             // Make a move
-            currentPosition.makeNextMove();
+            currentPosition = _labirinth.getCell(currentPosition.getX() + nextMove.getIncX(), currentPosition.getY() + nextMove.getIncY());
+            System.out.println(String.format("LOG %s: Moved FRONT to = %s", getAID().getName(),currentPosition.toString()));
+            
           } // Do some backtracking
           else {
-            // While the next move is a tried cell ...
-            while (_path.peek().getNextPossibleMove().getWasTried()) {
-              // Pop the cell from backtracking
-              Cell backCell = _path.pop();
-
-              // Make the backtrack move
-              currentPosition.moveTo(backCell);
-            }
-          }
-          System.out.println(String.format("LOG %s: Moved to = %s", getAID().getName(),currentPosition.toString()));
+            // Make the backtrack move
+            currentPosition = _path.pop();
+            System.out.println(String.format("LOG %s: Moved BACK to = %s", getAID().getName(),currentPosition.toString()));
+         }
+//          System.out.println(String.format("LOG %s: Moved to = %s", getAID().getName(),currentPosition.toString()));
         } while (!ExitFound());
         System.out.println(String.format("LOG %s: Exit found!", getAID().getName()));
 //000
