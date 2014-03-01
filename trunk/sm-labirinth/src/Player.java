@@ -16,7 +16,6 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import java.util.Random;
 import java.util.logging.Level;
@@ -180,6 +179,19 @@ public class Player extends Agent {
         // Run until the exit is found
         do {
 
+          long i = System.currentTimeMillis();
+          while (System.currentTimeMillis() - i < 200) {
+          }
+
+          // inform referes of agent's position
+          ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+          msg.addReceiver(refereeAgent);
+          msg.setLanguage("jr");
+          msg.setOntology("labirinth-ontology");
+          msg.setConversationId("draw");
+          msg.setContent(String.format("%d;%d", currentPosition.getY(), currentPosition.getX()));
+          send(msg);
+
           Move nextMove = currentPosition.getNextPossibleMove();
 
           // If there is a possible move ...
@@ -275,7 +287,7 @@ public class Player extends Agent {
           doDelete();
         }
       }
-      
+
     }
   }
 }
