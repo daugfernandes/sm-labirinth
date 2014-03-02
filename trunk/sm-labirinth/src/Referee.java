@@ -135,7 +135,7 @@ public class Referee extends Agent {
                   for (AID player : _players.keySet()) {
                     if (!player.getName().equals(msg.getSender().getName())) {
                       ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
-                      reply.addReceiver(msg.getSender());
+                      reply.addReceiver(player);
                       reply.setConversationId("looser");
                       myAgent.send(reply);
                     }
