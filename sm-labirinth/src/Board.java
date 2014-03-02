@@ -44,7 +44,7 @@ public class Board extends Agent {
       System.out.println(String.format("ERR %s: %s.", getAID().getName(), fe.getMessage()));
     }
 
-    // setup a cyclic behaviour to listen to players
+    // setup a cyclic behaviour to listen to referee
     addBehaviour(new CyclicBehaviour() {
       private static final long serialVersionUID = 1L;
 
