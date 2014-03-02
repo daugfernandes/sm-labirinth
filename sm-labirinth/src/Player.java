@@ -207,11 +207,11 @@ public class Player extends Agent {
               // Keep the current position in the path
               _path.push(currentPosition);
             }
-
+//            System.out.println(String.format("LOG %s: Moved FRONT to = %s", getAID().getName(), currentPosition.toString()));
           } else {
             // Make the backtrack move
             currentPosition = _path.pop();
-            //System.out.println(String.format("LOG %s: Moved backward to = %s", getAID().getName(), currentPosition.toString()));
+//            System.out.println(String.format("LOG %s: Moved BACK to = %s", getAID().getName(), currentPosition.toString()));
             if (_path.size() == 0) {
               break;
             }
