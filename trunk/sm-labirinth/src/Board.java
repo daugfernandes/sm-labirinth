@@ -1,7 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Class Board (agent)
+ * @author David Fernandes <david.paiva.fernandes@gmail.com>
+ * @author João Marques <joaorodr84@gmail.com>
  */
 
 import jade.core.Agent;
@@ -19,10 +19,6 @@ import java.awt.Graphics;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-/**
- *
- * @author David Fernandes <davidfernandes@acm.org>
- */
 public class Board extends Agent {
 
   private static final long serialVersionUID = 5L;
@@ -126,5 +122,4 @@ public class Board extends Agent {
     frame.setVisible(true);
 
   }
-
 }

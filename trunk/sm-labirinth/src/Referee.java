@@ -1,7 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Class Referee (agent)
+ * @author David Fernandes <david.paiva.fernandes@gmail.com>
+ * @author João Marques <joaorodr84@gmail.com>
  */
 
 import jade.core.AID;
@@ -20,11 +20,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author david.paiva.fernandes@gmail.com
- * @author joaorodr84@gmail.com
- */
 public class Referee extends Agent {
 
   private static final long serialVersionUID = 15L;
@@ -55,13 +50,15 @@ public class Referee extends Agent {
 
     _players = new HashMap<>();
     _playersPosition = new HashMap<>();
-
+    
+    // Initialize
     if (args.length > 0) {
       try {
+        // Generating labirinth
         _labirinth = new Labirinth((String) args[0]);
         System.out.println(String.format("LOG %s: Labirinth loaded; exit is " + _labirinth.getExit().toString(), getAID().getName()));
 
-        // registering the referee service in the yellow-pages
+        // Registering the referee service in the yellow-pages
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
@@ -76,6 +73,7 @@ public class Referee extends Agent {
           System.out.println(String.format("ERR %s: %s.", getAID().getName(), fe.getMessage()));
         }
 
+        // Sends the labirinth to the board agent
         addBehaviour(new CyclicBehaviour() {
           private static final long serialVersionUID = 1L;
 
@@ -109,7 +107,7 @@ public class Referee extends Agent {
           }
         });
 
-        // setup a cyclic behaviour to listen to players
+        // Listen to players and reacts accordingly
         addBehaviour(new CyclicBehaviour() {
           private static final long serialVersionUID = 1L;
 
@@ -118,8 +116,9 @@ public class Referee extends Agent {
             ACLMessage msg = receive();
             if (msg != null) {
               try {
+                  
+                // Being found by the players, the referee sends them the labirinth
                 if (msg.getConversationId().equals("alive")) {
-
                   String title = msg.getContent();
                   System.out.println(String.format("LOG %s: Message received from %s is {%s}", getAID().getName(), msg.getSender().getName(), title));
                   if (!_players.containsKey(msg.getSender())) {
@@ -129,7 +128,10 @@ public class Referee extends Agent {
                     reply.setContentObject(_labirinth);
                     myAgent.send(reply);
                   }
-                } else if (msg.getConversationId().equals("found")) {
+                }  
+                /* When a player finds the exit, the referee informs the other
+                     players that they lost, terminates the Board Agent and shuts down */
+                else if (msg.getConversationId().equals("found")) {
                   _players.put(msg.getSender(), true);
                   // game over!
                   for (AID player : _players.keySet()) {
@@ -142,7 +144,10 @@ public class Referee extends Agent {
                     TerminateBoard();
                     doDelete();
                   }
-                } else if (msg.getConversationId().equals("giveup")) {
+                }
+                
+                // If no player finds the exit, the referee shuts everything down
+                else if (msg.getConversationId().equals("giveup")) {
                   _players.put(msg.getSender(), true);
                   if (AllAgentsDied()) {
                     TerminateBoard();
@@ -165,7 +170,7 @@ public class Referee extends Agent {
       System.out.println(String.format("WRN %s: No Labirinth specified.", getAID().getName()));
       doDelete();
     }
-  }
+  } // End of setup
 
   private void BuildPlayersPosition(ACLMessage msg) {
 
@@ -192,6 +197,7 @@ public class Referee extends Agent {
 
   }
 
+  // Ckecks if all the agents are terminated
   private boolean AllAgentsDied() {
     for (Map.Entry<AID, Boolean> item : _players.entrySet()) {
       if (!item.getValue()) {
@@ -212,6 +218,7 @@ public class Referee extends Agent {
     System.out.println(String.format("LOG %s: Referee is terminating!", getAID().getName()));
   }
 
+  // Terminates the board agent
   private void TerminateBoard() {
     ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
     msg.addReceiver(boardAgent);
@@ -220,4 +227,4 @@ public class Referee extends Agent {
     msg.setConversationId("end");
     send(msg);
   }
-}
+} // End of referee

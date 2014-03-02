@@ -1,7 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Class Player (agent)
+ * @author David Fernandes <david.paiva.fernandes@gmail.com>
+ * @author João Marques <joaorodr84@gmail.com>
  */
 
 import jade.core.AID;
@@ -21,10 +21,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author david
- */
 public class Player extends Agent {
 
   private static final long serialVersionUID = 9L;
