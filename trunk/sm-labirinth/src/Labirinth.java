@@ -151,7 +151,7 @@ public class Labirinth implements java.io.Serializable {
     int width = _cells[0].length; // is squared for sure
 
     graphics.setColor(Color.BLACK);
-    graphics.fillRect(0, 0, getWidth(), getHeight());
+    graphics.clearRect(0, 0, getWidth(), getHeight());
 
     for (int idxRow = 0; idxRow < height; idxRow++) {
       for (int idxCol = 0; idxCol < width; idxCol++) {
