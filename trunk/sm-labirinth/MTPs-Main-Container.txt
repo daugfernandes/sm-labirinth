@@ -1,1 +1,1 @@
-http://Joao:7778/acc
+http://ubuntu-nb:7778/acc

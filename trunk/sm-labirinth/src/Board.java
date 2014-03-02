@@ -67,9 +67,10 @@ public class Board extends Agent {
               if (_labirinth != null) {
                 Graphics g = frame.getComponent(0).getGraphics();
                 _labirinth.Draw(g);
+                int k=0;
                 for (String agent : msg.getContent().split("/")) {
                   String[] values = agent.split(";");
-                  g.setColor(Color.GREEN);
+                  g.setColor(getColor(k++));
                   g.fillOval(Integer.parseInt(values[1])*20, Integer.parseInt(values[2])*20, 15, 15);
                 }
 
@@ -94,6 +95,33 @@ public class Board extends Agent {
 
   }
 
+  private Color getColor(int k) {
+    if(k==0) {
+      return Color.ORANGE;
+    } else
+    if(k==1) {
+      return Color.CYAN;
+    } else
+    if(k==2) {
+      return Color.GREEN;
+    } else
+    if(k==3) {
+      return Color.RED;
+    } else
+    if(k==4) {
+      return Color.MAGENTA;
+    } else
+    if(k==5) {
+      return Color.PINK;
+    } else
+    if(k==6) {
+      return Color.WHITE;
+    } else {
+      return Color.BLACK;
+    }
+    
+  }
+  
   @Override
   protected void takeDown() {
     // deregister
