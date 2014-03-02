@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Class Labirinth
+ * Defines the labirinth
+ * @author David Fernandes <david.paiva.fernandes@gmail.com>
+ * @author João Marques <joaorodr84@gmail.com>
  */
 
 import java.awt.Color;
@@ -11,25 +12,22 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-/**
- *
- * @author david.paiva.fernandes@gmail.com
- * @author joaorodr84@gmail.com
- */
+
 public class Labirinth implements java.io.Serializable {
 
   private static final long serialVersionUID = 7L;
 
-  private Cell[][] _cells;
-  private Cell _exit;
-  private int labWidth;
-  private int labHeight;
+  private Cell[][] _cells;          // Array of cell that form the labirinth
+  private Cell _exit;               // Exit cell of the labirinth
+  private int labWidth;             // Labirinth width
+  private int labHeight;            // Labirinth height
 
+  // Default constructor
   public Labirinth() {
-    // by default
     this(10, 10, new Cell(10, 10, true));
   }
 
+  // Constructor by argument (file with labirinth information)
   public Labirinth(String labirinthFileName) throws IOException {
 
     String[] labirinthString = readTextFile(labirinthFileName);
@@ -91,15 +89,18 @@ public class Labirinth implements java.io.Serializable {
     labHeight = height;
   }
 
+  // Constructor by arguments (width, height, exit)
   public Labirinth(int width, int height, Cell exit) {
     _cells = new Cell[height][width];
     _exit = exit;
   }
 
+  // Width getter
   public int getWidth() {
     return labWidth;
   }
 
+  // Height getter
   public int getHeight() {
     return labHeight;
   }
@@ -109,6 +110,8 @@ public class Labirinth implements java.io.Serializable {
    this._cells[x][y]
    }
    */
+  
+  // Reads the given text file and stores the result in a string
   private String[] readTextFile(String fileName) throws FileNotFoundException, IOException {
 
     StringBuilder sb = new StringBuilder();
@@ -127,14 +130,17 @@ public class Labirinth implements java.io.Serializable {
     return sb.toString().split("\n");
   }
 
+  // Exit getter
   public Cell getExit() {
     return _exit;
   }
 
+  // Cell getter (given the coordinates)
   public Cell getCell(int y, int x) {
     return _cells[y][x];
   }
 
+  // Draws the labirinth
   public void Draw(Graphics graphics) {
 
     if(graphics==null) {
@@ -183,7 +189,5 @@ public class Labirinth implements java.io.Serializable {
     // exit
     graphics.setColor(Color.YELLOW);
     graphics.drawOval(_exit.getX() * 20 + 10 - 2, _exit.getY() * 20 + 10 - 2, 4, 4);
-
   }
-
 }
